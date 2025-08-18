@@ -17,6 +17,8 @@ public static class DbContext
     /// </summary>
     public static readonly SqlSugarScope Instance = new(
         App.GetConfig<List<ConnectionConfig>>("DbConnection:ConnectionConfigs"),
+        // 读取 appsettings.json 中的 ConnectionConfigs 配置节点
+        App.GetConfig<List<ConnectionConfig>>("ConnectionConfigs"),
         db =>
         {
             // 这里配置全局事件，比如拦截执行 SQL
@@ -27,10 +29,41 @@ public static class DbContext
         var connSection = App.Configuration.GetSection("DbConnection:ConnectionConfigs:0");
         var dbSettings = connSection.GetSection("DbSettings").Get<DbSettings>() ?? new();
         var tableSettings = connSection.GetSection("TableSettings").Get<TableSettings>() ?? new();
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("database.json", optional: true)
+            .Build();
+
+        var dbSettings = config.GetSection("DbSettings").Get<DbSettings>() ?? new();
+        var tableSettings = config.GetSection("TableSettings").Get<TableSettings>() ?? new();
 
         if (dbSettings.EnableInitDb)
         {
             foreach (var conn in Instance.Ado.ConnectionConfigList)
+            {
+                var db = new SqlSugarClient(conn);
+                db.DbMaintenance.CreateDatabase();
+            }
+        }
+
+        var entityTypes = new[]
+        {
+            typeof(Entities.DataSourceType),
+            typeof(Entities.DataSource)
+        };
+
+        if (tableSettings.EnableInitTable)
+        {
+            Instance.CodeFirst.InitTables(entityTypes);
+        }
+        else if (tableSettings.EnableIncreTable)
+        {
+            var increTypes = entityTypes
+                .Where(t => t.IsDefined(typeof(IncreTableAttribute), true))
+                .ToArray();
+            if (increTypes.Length > 0)
+            {
+              
             {
                 var db = new SqlSugarClient(conn);
                 db.DbMaintenance.CreateDatabase();
