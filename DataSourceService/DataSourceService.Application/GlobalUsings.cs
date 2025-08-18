@@ -1,4 +1,4 @@
-﻿global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations;
 global using Furion;
 global using Furion.DataEncryption;
 global using Furion.DataValidation;

@@ -1,1 +1,3 @@
-Serve.Run(RunOptions.Default.WithArgs(args));
+using Furion;
+
+await Serve.RunAsync(RunOptions.Default.WithArgs(args));
