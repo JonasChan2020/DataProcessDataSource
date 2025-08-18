@@ -8,16 +8,20 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<None Remove="applicationsettings.json" />
-		<None Remove="DataSourceService.Application.xml" />
-	</ItemGroup>
+        <ItemGroup>
+                <None Remove="applicationsettings.json" />
+                <None Remove="DataSourceService.Application.xml" />
+                <None Remove="Configuration\Database.json" />
+        </ItemGroup>
 
-	<ItemGroup>
-		<Content Include="applicationsettings.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+        <ItemGroup>
+                <Content Include="applicationsettings.json">
+                        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                </Content>
+                <Content Include="Configuration\Database.json">
+                        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                </Content>
+        </ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\DataSourceService.Core\DataSourceService.Core.csproj" />

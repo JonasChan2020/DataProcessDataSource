@@ -2,6 +2,9 @@ namespace Common.Interfaces;
 
 using Common.Models;
 
+/// <summary>
+/// Standard contract for data source adapters.
+/// </summary>
 public interface IDataSourceAdapter
 {
     Task<bool> TestConnectionAsync(DataSourceConfig config);

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://gitee.com/dotnetchina/Furion/raw/v4/schemas/v4/furion-schema.json",
+
+  "DbConnection": {
+    "EnableConsoleSql": false,
+    "ConnectionConfigs": [
+      {
+        "DbType": "Sqlite",
+        "ConnectionString": "DataSource=./DataSourceService.db",
+        "DbSettings": {
+          "EnableInitDb": false,
+          "EnableInitView": false,
+          "EnableDiffLog": false,
+          "EnableUnderLine": false,
+          "EnableConnEncrypt": false
+        },
+        "TableSettings": {
+          "EnableInitTable": false,
+          "EnableIncreTable": false
+        },
+        "SeedSettings": {
+          "EnableInitSeed": false,
+          "EnableIncreSeed": false
+        }
+      }
+    ]
+  }
+}
