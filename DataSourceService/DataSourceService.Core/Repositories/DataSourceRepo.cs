@@ -3,6 +3,8 @@ namespace DataSourceService.Core.Repositories;
 using DataSourceService.Core.Entities;
 using Furion.DependencyInjection;
 using DataSourceService.Core;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public class DataSourceRepo : IDataSourceRepo, ITransient
 {

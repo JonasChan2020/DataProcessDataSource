@@ -1,6 +1,8 @@
 namespace DataSourceService.Core.Repositories;
 
 using DataSourceService.Core.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public interface IDataSourceRepo
 {
