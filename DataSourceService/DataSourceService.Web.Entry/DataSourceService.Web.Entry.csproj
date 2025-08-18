@@ -8,9 +8,14 @@
 		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\DataSourceService.Web.Core\DataSourceService.Web.Core.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataSourceService.Web.Core\DataSourceService.Web.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\database.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties properties_4launchsettings_1json__JsonSchema="" />

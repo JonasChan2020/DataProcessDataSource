@@ -1,0 +1,14 @@
+{
+  "DbSettings": {
+    "EnableInitDb": false,
+    "EnableInitView": false,
+    "EnableDiffLog": false,
+    "EnableUnderLine": false,
+    "EnableConnEncrypt": false
+  },
+  "TableSettings": {
+    "EnableInitTable": false,
+    "EnableIncreTable": false
+  }
+}
+
