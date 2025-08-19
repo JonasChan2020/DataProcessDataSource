@@ -1,0 +1,8 @@
+﻿export default {
+    @Model.LowerClassName: {
+        @Model.LowerClassName: '@Model.BusName',
+    @foreach (var column in Model.TableField) {
+        @:@column.LowerPropertyName: '@column.ColumnComment',	
+        } 
+    },
+};

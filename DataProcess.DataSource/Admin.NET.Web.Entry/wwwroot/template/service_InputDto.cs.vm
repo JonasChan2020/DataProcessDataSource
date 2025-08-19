@@ -1,0 +1,225 @@
+﻿// Admin.NET 项目的版权、商标、专利和其他相关权利均受相应法律法规的保护。使用本项目应遵守相关法律法规和许可证的要求。
+//
+// 本项目主要遵循 MIT 许可证和 Apache 许可证（版本 2.0）进行分发和使用。许可证位于源代码树根目录中的 LICENSE-MIT 和 LICENSE-APACHE 文件。
+//
+// 不得利用本项目从事危害国家安全、扰乱社会秩序、侵犯他人合法权益等法律法规禁止的活动！任何基于本项目二次开发而产生的一切法律纠纷和责任，我们不承担任何责任！
+
+using Admin.NET.Core;
+using System.ComponentModel.DataAnnotations;
+@{
+    string RemoteField="";
+    string PKName="";
+    foreach (var column in Model.TableField){
+        if(column.RemoteVerify){
+            RemoteField=@column.PropertyName;
+        }
+        if(column.ColumnKey == "True"){
+            PKName=column.PropertyName;
+        }
+    }
+}
+
+namespace @Model.NameSpace;
+
+    /// <summary>
+    /// @(@Model.BusName)基础输入参数
+    /// </summary>
+    public class @(@Model.ClassName)BaseInput
+    {
+@foreach (var column in Model.TableField){
+if (@column.ColumnKey != "True"){
+
+        @:/// <summary>
+        @:/// @column.ColumnComment
+        @:/// </summary>
+        @:public virtual @column.NetType @column.PropertyName { get; set; }
+        @:
+}
+}
+    }
+
+    /// <summary>
+    /// @(@Model.BusName)分页查询输入参数
+    /// </summary>
+    public partial class Page@(@Model.ClassName)Input : BasePageInput
+    {
+        /// <summary>
+        /// 关键字查询
+        /// </summary>
+        public string? SearchKey { get; set; }
+
+@foreach (var column in Model.TableField){
+    if (@column.QueryWhether == "Y"){
+
+        @:/// <summary>
+        @:/// @column.ColumnComment
+        @:/// </summary>
+        if(@column.NetType?.EndsWith("?") == true){
+        @:public @column.NetType @column.PropertyName { get; set; }
+        }else {
+        @:public @(@column.NetType)? @column.PropertyName { get; set; }
+        }
+        @:
+
+    if(@column.NetType?.TrimEnd('?') == "DateTime" && @column.QueryType == "~"){
+        @:/// <summary>
+        @: /// @(@column.ColumnComment)范围
+        @: /// </summary>
+        @: public DateTime?[] @(@column.PropertyName)Range { get; set; } 
+
+}
+
+}
+}
+    }
+
+    /// <summary>
+    /// @(@Model.BusName)增加输入参数
+    /// </summary>
+    public class Add@(@Model.ClassName)Input : @(@Model.ClassName)BaseInput
+    {
+@foreach (var column in Model.TableField){
+if (@column.WhetherAddUpdate == "Y"){
+        @:/// <summary>
+        @:/// @column.ColumnComment
+        @:/// </summary>
+        @if(@column.WhetherRequired=="Y"){
+        @:[Required(ErrorMessage = "@(@column.ColumnComment)不能为空")]
+        }
+        @if(@column.NetType.StartsWith("string")&&!@column.RuleItems.Any(t=>t.Type=="length")&&@column.ColumnLength>0){
+        @:[StringLength(@(@column.ColumnLength), ErrorMessage = "@(@column.ColumnComment)不能超过@(@column.ColumnLength)个字符")]
+        }
+        @if(@column.AnyRule){
+        @foreach(var rule in @column.RuleItems){
+        @if(rule.Type=="pattern"){
+        @:[RegularExpression(@@"@(@FormatPattern(rule.Pattern))", ErrorMessage = "@(@rule.Message)")]
+        }
+        @if(rule.Type=="length"&&column.NetType.StartsWith("string")){
+        @:[StringLength(@(@rule.Max),MinimumLength = @(@rule.Min), ErrorMessage = "@(@column.ColumnComment)只能是@(@rule.Min)至@(@rule.Max)字符")]
+        }
+        @if(rule.Type=="length"&&column.NetType.StartsWith("DateTime")){
+        @:[Range(typeof(DateTime), "@(@rule.Min)", "@(@rule.Max)", ErrorMessage = "@(@column.ColumnComment)只能是@(@rule.Min)到@(@rule.Max)")]
+        }
+        @if(rule.Type=="length"&&(column.NetType.StartsWith("int")||column.NetType.StartsWith("long")||column.NetType.StartsWith("decimal")||column.NetType.StartsWith("float")||column.NetType.StartsWith("double"))){
+        @:[Range(@(@rule.Min), @(@rule.Max), ErrorMessage = "@(@column.ColumnComment)只能是@(@rule.Min)至@(@rule.Max)")]
+        }
+        }
+        }
+        @:public override @column.NetType @column.PropertyName { get; set; }
+        @:
+}
+}
+    }
+
+    /// <summary>
+    /// @(@Model.BusName)删除输入参数
+    /// </summary>
+    public class Delete@(@Model.ClassName)Input : BaseIdInput
+    {
+@foreach (var column in Model.TableField){
+if (@column.NetType == "Guid" && @column.PropertyName == "Id"){
+        @:/// <summary>
+        @:/// @column.ColumnComment
+        @:/// </summary>
+        @:public @column.NetType @column.PropertyName { get; set; }
+        @:
+}
+}
+@foreach (var column in Model.TableField){
+if (@column.ColumnKey == "True" && @column.PropertyName != "Id"){
+        @:/// <summary>
+        @:/// @column.ColumnComment
+        @:/// </summary>
+        @:[Required(ErrorMessage = "@(@column.ColumnComment)不能为空")]
+        @:public @column.NetType @column.PropertyName { get; set; }
+        @:
+}
+}
+    }
+
+    /// <summary>
+    /// @(@Model.BusName)更新输入参数
+    /// </summary>
+    public class Update@(@Model.ClassName)Input : @(@Model.ClassName)BaseInput
+    {
+@foreach (var column in Model.TableField){
+if (@column.ColumnKey == "True"){
+        @:/// <summary>
+        @:/// @column.ColumnComment
+        @:/// </summary>
+        @:[Required(ErrorMessage = "@(@column.ColumnComment)不能为空")]
+        @if (@column.NetType == "Guid" && @column.PropertyName == "Id"){
+        @:[AdaptIgnore]
+        }
+        @:public @column.NetType @column.PropertyName { get; set; }
+        @:
+}
+if (@column.WhetherAddUpdate == "Y"){
+        @:/// <summary>
+        @:/// @column.ColumnComment
+        @:/// </summary>
+        @if(@column.WhetherRequired=="Y"){
+        @:[Required(ErrorMessage = "@(@column.ColumnComment)不能为空")]
+        }
+        @if(@column.NetType.StartsWith("string")&&!@column.RuleItems.Any(t=>t.Type=="length")&&@column.ColumnLength>0){
+        @:[StringLength(@(@column.ColumnLength), ErrorMessage = "@(@column.ColumnComment)不能超过@(@column.ColumnLength)个字符")]
+        }
+        @if(@column.AnyRule){
+        @foreach(var rule in @column.RuleItems){
+        @if(rule.Type=="pattern"){
+        @:[RegularExpression(@@"@(@FormatPattern(rule.Pattern))", ErrorMessage = "@(@rule.Message)")]
+        }
+        @if(rule.Type=="length"&&column.NetType.StartsWith("string")){
+        @:[StringLength(@(@rule.Max),MinimumLength = @(@rule.Min), ErrorMessage = "@(@column.ColumnComment)只能是@(@rule.Min)至@(@rule.Max)字符")]
+        }
+        @if(rule.Type=="length"&&column.NetType.StartsWith("DateTime")){
+        @:[Range(typeof(DateTime), "@(@rule.Min)", "@(@rule.Max)", ErrorMessage = "@(@column.ColumnComment)只能是@(@rule.Min)到@(@rule.Max)")]
+        }
+        @if(rule.Type=="length"&&(column.NetType.StartsWith("int")||column.NetType.StartsWith("long")||column.NetType.StartsWith("decimal")||column.NetType.StartsWith("float")||column.NetType.StartsWith("double"))){
+        @:[Range(@(@rule.Min), @(@rule.Max), ErrorMessage = "@(@column.ColumnComment)只能是@(@rule.Min)至@(@rule.Max)")]
+        }
+        }
+        }
+        @:public override @column.NetType @column.PropertyName { get; set; }
+        @:
+}
+}
+    }
+
+    /// <summary>
+    /// @(@Model.BusName)主键查询输入参数
+    /// </summary>
+    public class QueryById@(@Model.ClassName)Input : Delete@(@Model.ClassName)Input
+    {
+
+    }
+
+
+@if(@Model.RemoteVerify){
+    @:/// <summary>
+    @:/// 检查@(RemoteField)字段参数
+    @:/// </summary>
+    @:public class Exists@(RemoteField)Input
+    @:{
+        @:/// <summary>
+        @:/// 字段值
+        @:/// </summary>
+        @:public string FieldValue { get; set; }
+        @:
+        @:/// <summary>
+        @:/// 旧字段值
+        @:/// </summary>
+        @:public string OldFieldValue { get; set; }
+    @:}
+}
+@{
+string FormatPattern(string pattern)
+{
+    if (pattern.EndsWith('g'))
+    {
+        pattern = pattern.TrimEnd('g');
+    }
+    pattern = pattern.Trim('/');
+    return pattern;
+}
+}

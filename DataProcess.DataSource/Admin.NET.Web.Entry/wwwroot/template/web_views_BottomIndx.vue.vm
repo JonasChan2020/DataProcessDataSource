@@ -1,0 +1,113 @@
+﻿@{
+	string LowerFirstLetter(string text)
+	{
+		return text.ToString()[..1].ToLower() + text[1..]; // 首字母小写
+	}
+	var pkField = Model.TableField.Where(c => c.ColumnKey == "True").FirstOrDefault();
+	string pkFieldName = null;
+	if(pkField != null && !string.IsNullOrEmpty(pkField.PropertyName))
+	{
+		pkFieldName = LowerFirstLetter(pkField.PropertyName);
+	}
+	Dictionary<string, int> definedObjects = new Dictionary<string, int>();
+	bool haveLikeCdt = false;
+	foreach (var column in Model.TableField){
+		if (column.QueryWhether == "Y" && column.QueryType == "like"){
+			haveLikeCdt = true;
+		}
+	}
+}
+<template>
+	<div class="@(@Model.LowerClassName)-container">
+
+		<splitpanes class="default-theme">
+			<pane size="15" style="display: flex">
+				<@(@Model.LeftTab)Tree ref="@(@Model.LowerLeftTab)TreeRef" @@node-click="handleNodeChange" />
+			</pane>
+		
+			<pane size="85" style="display: flex; flex-direction: column;">
+				<splitpanes horizontal>
+				    <pane size="60" style="display: flex;flex-direction: column;">
+					<IndexList ref="indexListRef" @@list-click="handleIndexChange" />
+				    </pane>
+				    <pane size="40" style="display: flex; flex-direction: column;">
+					
+						<el-tabs v-model="activeName" type="border-card"
+							style="height: 100%; padding: 0px; margin-bottom: 0px; position: relative">
+							<el-tab-pane label="属性1" name="1" style="height: 100%; margin-bottom: 0px; position: relative">
+							<@(@Model.BottomTab)Bottom ref="@(@Model.LowerBottomTab)BottomRef" @@list-click="handleBottomChange" />
+							</el-tab-pane>
+							<el-tab-pane label="属性2" name="2" style="height: 100%; margin-bottom: 0px; position: relative">	
+							<div></div>
+							</el-tab-pane>
+						</el-tabs>
+				    </pane>
+				</splitpanes>
+			</pane>
+		</splitpanes>
+	</div>
+</template>
+
+<script lang="ts" setup name="@(@Model.LowerClassName)">
+import { onMounted, reactive, ref } from 'vue';
+import { ElMessageBox, ElMessage } from "element-plus";
+import { Splitpanes, Pane } from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
+
+import @(@Model.LeftTab)Tree from '/@@/views/@(@Model.PagePath)/@(@Model.LowerLeftTab)/component/@(@Model.LowerLeftTab)Tree.vue';
+import IndexList from '/@@/views/@(@Model.PagePath)/@(@Model.LowerClassName)/component/@(@Model.LowerClassName)List.vue';
+import @(@Model.BottomTab)Bottom from '/@@/views/@(@Model.PagePath)/@(@Model.LowerBottomTab)/component/@(@Model.LowerBottomTab)List.vue';
+const indexListRef = ref<InstanceType<typeof IndexList>>();
+const @(@Model.LowerBottomTab)BottomRef = ref<InstanceType<typeof @(@Model.BottomTab)Bottom>>();
+const activeName = ref('1');
+// 变量
+const state = reactive({
+	queryParams: {
+		searchKey: undefined,
+		@if(Model.QueryWhetherList.Count > 0) {
+			@foreach (var column in Model.QueryWhetherList) {
+		@:@(@column.LowerPropertyName): undefined,
+			}
+		}
+	},
+});
+
+
+// 页面初始化
+onMounted(() => {
+
+});
+
+
+// 树组件点击
+const handleNodeChange = async (node: any) => {
+	console.log('handleNodeChange--', JSON.stringify(node));
+	state.queryParams={};//每次重置参数
+	state.queryParams["@(@Model.LowerLeftPrimaryKey)"] = node.data.@(@Model.LowerLeftKey);//树主表关联字段=树关联字段
+	console.log('handleNodeChange--', state.queryParams.@(@Model.LowerLeftPrimaryKey));
+	await indexListRef.value?.listhandleQuery(state.queryParams);
+	await @(@Model.LowerBottomTab)BottomRef.value?.listhandleQuery({@(@Model.LowerBottomKey):'1'});//重置下表一个不可能有的条件
+};
+// 主表List组件点击
+const handleIndexChange = async (row: any,column: any) => {
+	console.log('handleIndexChange--', JSON.stringify(row));
+	console.log('handleIndexChange--', JSON.stringify(column));
+	state.queryParams.@(@Model.LowerBottomKey) = row.@(@Model.LowerBottomPrimaryKey);//下关联字段=下表主表关联字段
+	console.log('handleIndexChange--', state.queryParams.@(@Model.LowerBottomKey));
+	await @(@Model.LowerBottomTab)BottomRef.value?.listhandleQuery(state.queryParams);
+};
+const handleBottomChange = async (row: any) => {
+	console.log('handleBottomChange--', JSON.stringify(row));
+};
+</script>
+
+<style lang="scss" scoped>
+:deep(.el-input),
+:deep(.el-select),
+:deep(.el-input-number) {
+	width: 100%;
+}
+:deep(.el-slider .el-input-number){
+	width: auto;
+}
+</style>

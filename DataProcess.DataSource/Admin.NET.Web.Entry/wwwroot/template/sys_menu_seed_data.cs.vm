@@ -1,0 +1,71 @@
+﻿// Admin.NET 项目的版权、商标、专利和其他相关权利均受相应法律法规的保护。使用本项目应遵守相关法律法规和许可证的要求。
+//
+// 本项目主要遵循 MIT 许可证和 Apache 许可证（版本 2.0）进行分发和使用。许可证位于源代码树根目录中的 LICENSE-MIT 和 LICENSE-APACHE 文件。
+//
+// 不得利用本项目从事危害国家安全、扰乱社会秩序、侵犯他人合法权益等法律法规禁止的活动！任何基于本项目二次开发而产生的一切法律纠纷和责任，我们不承担任何责任！
+
+@{
+	long lastId=0;
+	long pid=0;
+	int zindex=0;
+	int orderNo=0;
+	string createTime="";
+}
+
+namespace @(@Model.NameSpace).SeedData;
+
+/// <summary>
+/// @(@Model.BusName)系统菜单表种子数据
+/// </summary>
+// [IncreSeed]
+public class @(@Model.ClassName)MenuSeedData : ISqlSugarEntitySeedData<SysMenu>
+{
+    /// <summary>
+    /// 种子数据
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<SysMenu> HasData()
+    {
+        //菜单列表
+        var list = new List<SysMenu>();
+
+        #region @(@Model.BusName)
+@foreach (var menu in Model.MenuList){
+@{
+zindex=zindex+1;
+}
+@if((int)menu.Type==1){
+        @:list.Add(new SysMenu { Id = @(menu.Id), Pid = @(menu.Pid), Title = "@(menu.Title)", Path = "@(menu.Path)", Name = "@(menu.Name)", Component = "Layout", Icon = "@(menu.Icon)", Type = MenuTypeEnum.Dir, CreateTime = DateTime.Parse("@(menu.CreateTime.ToString("yyyy-MM-dd HH:mm:ss"))"), OrderNo = @(menu.OrderNo) });
+}
+@if((int)menu.Type==2){
+		@{
+			pid=menu.Id;
+		}
+        @:list.Add(new SysMenu { Id = @(menu.Id), Pid = @(menu.Pid), Title = "@(menu.Title)", Path = "@(menu.Path)", Name = "@(menu.Name)", Component = "@(menu.Component)", Icon = "@(menu.Icon)", Type = MenuTypeEnum.Menu, CreateTime = DateTime.Parse("@(menu.CreateTime.ToString("yyyy-MM-dd HH:mm:ss"))"), OrderNo = @(menu.OrderNo) });
+}
+@if((int)menu.Type==3) {
+		@:list.Add(new SysMenu { Id = @(menu.Id), Pid = @(menu.Pid), Title = "@(menu.Title)", Permission = "@(menu.Permission)", Type = MenuTypeEnum.Btn, CreateTime = DateTime.Parse("@(menu.CreateTime.ToString("yyyy-MM-dd HH:mm:ss"))"), OrderNo = @(menu.OrderNo) });
+}
+@if(zindex==Model.MenuList.Count){
+	lastId=menu.Id-18888;
+	orderNo=menu.OrderNo;
+	createTime=menu.CreateTime.ToString("yyyy-MM-dd HH:mm:ss");
+}
+}
+@if(@Model.PrintType != "off"){
+		@:list.Add(new SysMenu { Id = @(lastId+1), Pid = @(pid), Title = "打印", Permission = "@(LowerFirstLetter(@Model.ClassName))/print", Type = MenuTypeEnum.Btn, CreateTime = DateTime.Parse("@(createTime)"), OrderNo = @(orderNo+10) });
+}
+		// list.Add(new SysMenu { Id = @(lastId+2), Pid = @(pid), Title = "导入", Permission = "@(LowerFirstLetter(@Model.ClassName))/import", Type = MenuTypeEnum.Btn, CreateTime = DateTime.Parse("@(createTime)"), OrderNo = @(orderNo+20) });
+		// list.Add(new SysMenu { Id = @(lastId+3), Pid = @(pid), Title = "导出", Permission = "@(LowerFirstLetter(@Model.ClassName))/export", Type = MenuTypeEnum.Btn, CreateTime = DateTime.Parse("@(createTime)"), OrderNo = @(orderNo+30) });
+        #endregion
+
+        return list;
+    }
+}
+
+@{
+string LowerFirstLetter(string text)
+{
+return text.ToString()[..1].ToLower() + text[1..]; // 首字母小写
+}
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://gitee.com/dotnetchina/Furion/raw/v4/schemas/v4/furion-schema.json",
+
+  // 短信配置
+  "SMS": {
+    // 阿里云短信
+    "Aliyun": {
+      "AccessKeyId": "",
+      "AccessKeySecret": "",
+      "Templates": [
+        {
+          "Id": "0",
+          "SignName": "AdminNET 平台",
+          "TemplateCode": "SMS_xxx",
+          "Content": "您的验证码为：${code}，请勿泄露于他人！"
+        },
+        {
+          "Id": "1",
+          "SignName": "AdminNET 平台",
+          "TemplateCode": "SMS_xxx",
+          "Content": "注册成功，感谢您的注册，请妥善保管您的账户信息"
+        }
+      ]
+    },
+    // 腾讯云短信
+    "Tencentyun": {
+      "SdkAppId": "",
+      "AccessKeyId": "",
+      "AccessKeySecret": "",
+      "Templates": [
+        {
+          "Id": "0",
+          "SignName": "AdminNET 平台",
+          "TemplateCode": "",
+          "Content": ""
+        }
+      ]
+    }
+  }
+}

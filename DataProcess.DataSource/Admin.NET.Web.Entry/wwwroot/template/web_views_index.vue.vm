@@ -1,0 +1,51 @@
+﻿@{
+	string LowerFirstLetter(string text)
+	{
+		return text.ToString()[..1].ToLower() + text[1..]; // 首字母小写
+	}
+	var pkField = Model.TableField.Where(c => c.ColumnKey == "True").FirstOrDefault();
+	string pkFieldName = null;
+	if(pkField != null && !string.IsNullOrEmpty(pkField.PropertyName))
+	{
+		pkFieldName = LowerFirstLetter(pkField.PropertyName);
+	}
+	Dictionary<string, int> definedObjects = new Dictionary<string, int>();
+	bool haveLikeCdt = false;
+	foreach (var column in Model.TableField){
+		if (column.QueryWhether == "Y" && column.QueryType == "like"){
+			haveLikeCdt = true;
+		}
+	}
+}
+<template>
+	<div class="@(@Model.LowerClassName)-container">
+		<IndexList ref="indexListRef" @@list-click="handleIndexChange" />
+	</div>
+</template>
+
+<script lang="ts" setup name="@(@Model.LowerClassName)">
+import { onMounted, reactive, ref } from 'vue';
+import IndexList from '/@@/views/@(@Model.PagePath)/@(@Model.LowerClassName)/component/list.vue';
+const indexListRef = ref<InstanceType<typeof IndexList>>();
+// 变量初始化
+const state = reactive({
+	queryParams: {
+		searchKey: undefined,
+		@if(Model.QueryWhetherList.Count > 0) {
+			@foreach (var column in Model.QueryWhetherList) {
+		@:@(@column.LowerPropertyName): undefined,
+			}
+		}
+	}
+});
+// 页面初始化,列表控件初始化不请求数据，这里要请求一下
+onMounted(() => {
+	indexListRef.value?.listhandleQuery(state.queryParams);
+});
+// 主表List组件点击
+const handleIndexChange = async (row: any,column: any) => {
+	console.log('handleIndexChange--', JSON.stringify(row));
+	console.log('handleIndexChange--', JSON.stringify(column));
+};
+</script>
+

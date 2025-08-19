@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<DocumentationFile>DataProcess.DataSource.Application.xml</DocumentationFile>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="Configuration\**\*">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Remove="Configuration\Database.*.json" />
+		<Content Include="Configuration\Database.*.json">
+			<DependentUpon>Database.json</DependentUpon>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+		<Content Include="wwwroot\**\*">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="DataProcess.DataSource.Application.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\DataProcess.DataSource.Core\DataProcess.DataSource.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="System\Services\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="NJsonSchema" Version="11.4.0" />
+	</ItemGroup>
+
+</Project>

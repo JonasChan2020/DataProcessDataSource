@@ -1,0 +1,100 @@
+﻿// Admin.NET 项目的版权、商标、专利和其他相关权利均受相应法律法规的保护。使用本项目应遵守相关法律法规和许可证的要求。
+//
+// 本项目主要遵循 MIT 许可证和 Apache 许可证（版本 2.0）进行分发和使用。许可证位于源代码树根目录中的 LICENSE-MIT 和 LICENSE-APACHE 文件。
+//
+// 不得利用本项目从事危害国家安全、扰乱社会秩序、侵犯他人合法权益等法律法规禁止的活动！任何基于本项目二次开发而产生的一切法律纠纷和责任，我们不承担任何责任！
+
+namespace @Model.NameSpace;
+
+/// <summary>
+///  HJ:这里做优化 如果是富文本不传入
+/// @(@Model.BusName)输出参数
+/// </summary>
+public partial class Page@(@Model.ClassName)Output
+{
+@foreach (var column in Model.TableField){
+
+    @:/// <summary>
+    @:/// @column.ColumnComment
+    @:/// </summary>
+if(column.EffectType == "ForeignKey")
+{
+    @:public @column.NetType @column.PropertyName { get; set; } 
+    @:
+    @:/// <summary>
+    @:/// @(column.ColumnComment) 描述
+    @:/// </summary>
+    @:public @(@column.FkColumnNetType) @(@column.PropertyName)@(@column.FkColumnName) { get; set; } 
+
+}else if(column.EffectType == "Upload"){
+    @:public @column.NetType @column.PropertyName { get; set; }
+    @:public SysFile @(@column.PropertyName)Attachment { get; set; }
+}else if(column.EffectType == "ApiTreeSelector"){
+    @:public @column.NetType @column.PropertyName { get; set; } 
+    @:
+    @:/// <summary>
+    @:/// 树型@(column.ColumnComment) 描述 
+    @:/// </summary>
+    @:public string? @(@column.PropertyName)@(@column.DisplayColumn) { get; set; } 
+    @:
+    @:/// <summary>
+    @:/// 树型分类子项
+    @:/// </summary>
+    @:public List<@(@Model.ClassName)Output> Children { get; set; } = [];
+
+}else if(column.EffectType == "RichTextEditor"){
+    @:/// HJ:富文本不传,提高性能
+}else{
+    @:public @column.NetType @(@column.PropertyName) { get; set; }
+}
+    @:
+}
+    }
+ 
+
+@foreach (var column in Model.TableField){
+if (@column.EffectType == "ApiTreeSelector"){
+    @:// 使用实际实体@(@column.FkTableName),所以这里就删了
+    @:/*
+    @:[SugarTable("@(@column.FkTableName)")]
+    @:public class @(@column.FkEntityName)TreeOutput: EntityBaseId
+    @:{
+        @:[SugarColumn(ColumnName = "@(@column.DisplayColumn)")]
+        @:public @(@Model.GetColumnNetType(@column.FkTableName,@column.DisplayColumn)) Label { get; set; }
+
+        @:[SugarColumn(ColumnName = "@(@column.ValueColumn)", IsPrimaryKey = true, IsIdentity = false)]
+        @:public @(@Model.GetColumnNetType(@column.FkTableName,@column.ValueColumn))  Value { get; set; }
+
+        @:public @(@Model.GetColumnNetType(@column.FkTableName,@column.PidColumn)) @column.PidColumn { get; set; }
+        @:[SugarColumn(IsIgnore = true)]
+        @:public List<@(@column.FkEntityName)TreeOutput> Children { get; set; }
+    @:}
+    @:*/
+}
+}
+
+
+/// <summary>
+///  HJ:这里用的标准的Dto,如果有特殊需要可以在Dto中添加
+/// @(@Model.BusName)导入导出输出参数
+/// </summary>
+public partial class @(@Model.ClassName)Dto
+{
+
+@foreach (var column in Model.TableField){
+
+    @:/// <summary>
+    @:/// @column.ColumnComment
+    @:/// </summary>
+    @:[ImporterHeader(Name = "@(column.ColumnComment)")]
+    @:[ExporterHeader(DisplayName = "@(column.ColumnComment)", IsBold = true)]
+    @:public @column.NetType @column.PropertyName { get; set; }
+    @:
+}
+}
+ 
+
+
+
+ 
+

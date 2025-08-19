@@ -1,0 +1,160 @@
+{
+  "LLM": {
+    "ModelProvider": "DeepSeek", // 当前使用模型，取值为下面Providers的ProductName
+    "InitSystemChatMessage": "你是一个经验丰富的 Admin.NET 人工智能助手，请根据用户的问题给出准确的回答。- **回答请以markdown格式输出**;- **适当加入emoji表达人类情感，使内容更易于理解与传播。**",
+    "UserCanSwitchLLM": true, // 是否可以切换模型
+    "TargetCount": 10, // 用于消息截取配置，当消息超过TargetCount+ThresholdCount数量时，会进行截取操作，以避免token超出限制
+    "ThresholdCount": 3, // 用于消息截取配置，当消息超过TargetCount+ThresholdCount数量时，会进行截取操作，以避免token超出限制
+    "IsUserProxy": false, // 如果使用的是openai,claude等国内未授权的模型，并且在国内运行，请设置为true，否则设置为false,避免这些LLM被国内防火墙拦截
+    "ProxyUrl": "http://127.0.0.1:10809", // 如果IsUserProxy为true，请设置代理地址，否则设置为空
+    "LogEnabled": false, // 是否开启日志，如果开启，会记录用户与大模型交互的日志，以http协议的形式展示.
+    "Providers": [
+      {
+        "ProductName": "OpenAI", // LLM产品名称
+        "LLMType": "OpenAI_Compatible",
+        "ApiKey": "sk-proj-88vztr-6Tf6LwmtpvqAYQR-5q4XJaLW-6vmeeVunhycpsUuKMLGLJAhDGyodovkVJqXLba-HV_ST3BlbkFJghWQCgwt68t5Fv4AZSwoY0MX2K2c-HQPbBQLQYOrGcWfhX4yM9OJtqMYAmPedko4RRolifks8A",
+        "ApiEndpoint": "https://api.openai.com/v1",
+        "ChatCompletion": {
+          "ModelId": "gpt-4o",
+          "SupportModelIds": [
+            "gpt-4o",
+            "gpt-4o-mini"
+          ]
+        },
+        "Embedding": {
+          "ModelId": "text-embedding-ada-002",
+          "SupportModelIds": [
+            "text-embedding-ada-002",
+            "text-embedding-3-small"
+          ]
+        }
+      },
+      {
+        "ProductName": "Azure",
+        "LLMType": "AzureOpenAI",
+        "ApiKey": "sk-proj-88vztr-6Tf6LwmtpvqAYQR-5q4XJaLW-6vmeeVunhycpsUuKMLGLJAhDGyodovkVJqXLba-HV_ST3BlbkFJghWQCgwt68t5Fv4AZSwoY0MX2K2c-HQPbBQLQYOrGcWfhX4yM9OJtqMYAmPedko4RRolifks8A",
+        "ApiEndpoint": "https://my-openapi.openai.azure.com/",
+        "ChatCompletion": {
+          "ModelId": "gpt-4o",
+          "SupportModelIds": [
+            "gpt-4o",
+            "gpt-4o-mini"
+          ]
+        },
+        "Embedding": {
+          "ModelId": "text-embedding-ada-002",
+          "SupportModelIds": [
+            "text-embedding-ada-002",
+            "text-embedding-3-small"
+          ]
+        }
+      },
+      {
+        "ProductName": "DeepSeek",
+        "LLMType": "OpenAI_Compatible",
+        "ApiKey": "sk-c1f8ca9b3b524d65a817200681f3241e",
+        "ApiEndpoint": "https://api.deepseek.com/v1",
+        "ChatCompletion": {
+          "ModelId": "deepseek-chat",
+          "SupportModelIds": [
+            "deepseek-chat",
+            "deepseek-reasoner"
+          ]
+        }
+      },
+      {
+        "ProductName": "google",
+        "LLMType": "google",
+        "ApiKey": "sk-proj-88vztr-6Tf6LwmtpvqAYQR-5q4XJaLW-6vmeeVunhycpsUuKMLGLJAhDGyodovkVJqXLba-HV_ST3BlbkFJghWQCgwt68t5Fv4AZSwoY0MX2K2c-HQPbBQLQYOrGcWfhX4yM9OJtqMYAmPedko4RRolifks8A",
+        "ApiEndpoint": "https://api.openai.com",
+        "ChatCompletion": {
+          "ModelId": "gemini-1.5-flash",
+          "SupportModelIds": [
+            "gemini-1.5-flash",
+            "gemini-1.5-pro"
+          ]
+        },
+        "Embedding": {
+          "ModelId": "text-embedding-3-small",
+          "SupportModelIds": [
+            "text-embedding-3-small",
+            "text-embedding-3-large"
+          ]
+        }
+      },
+      {
+        "ProductName": "Ollama",
+        "LLMType": "Ollama",
+        "ApiKey": "sk-proj-88vztr-6Tf6LwmtpvqAYQR-5q4XJaLW-6vmeeVunhycpsUuKMLGLJAhDGyodovkVJqXLba-HV_ST3BlbkFJghWQCgwt68t5Fv4AZSwoY0MX2K2c-HQPbBQLQYOrGcWfhX4yM9OJtqMYAmPedko4RRolifks8A",
+        "ApiEndpoint": "http://127.0.0.1:11434",
+        "ChatCompletion": {
+          "ModelId": "llama3.1",
+          "SupportModelIds": [
+            "llama3.1",
+            "llama3.1:8b",
+            "llama3.1:70b"
+          ]
+        }
+      },
+      {
+        "ProductName": "OpenRouter",
+        "LLMType": "OpenAI_Compatible",
+        "ApiKey": "sk-proj-88vztr-6Tf6LwmtpvqAYQR-5q4XJaLW-6vmeeVunhycpsUuKMLGLJAhDGyodovkVJqXLba-HV_ST3BlbkFJghWQCgwt68t5Fv4AZSwoY0MX2K2c-HQPbBQLQYOrGcWfhX4yM9OJtqMYAmPedko4RRolifks8A",
+        "ApiEndpoint": "https://openrouter.ai/api/v1",
+        "ChatCompletion": {
+          "ModelId": "deepseek/deepseek-r1:free",
+          "SupportModelIds": [
+            "deepseek/deepseek-chat-v3-0324:free",
+            "deepseek/deepseek-r1:free",
+            "google/gemini-2.0-flash-exp:free",
+            "google/gemma-3-27b-it:free"
+          ]
+        }
+      },
+      {
+        "ProductName": "Claude",
+        "LLMType": "Claude",
+        "ApiKey": "sk-ant-api03-0000000000000000000000000000000000000000000000000000000000000000",
+        "ApiEndpoint": "https://api.anthropic.com/v1",
+        "Region": "us-east-1",
+        "ApiSecret": "sk-ant-api03-0000000000000000000000000000000000000000000000000000000000000000",
+        "ChatCompletion": {
+          "ModelId": "claude-3-7-sonnet-20250219",
+          "SupportModelIds": [
+            "claude-3-5-sonnet-20240620",
+            "claude-3-7-sonnet-20250219",
+            "claude-opus-4-20250514",
+            "claude-sonnet-4-20250514"
+          ]
+        }
+      },
+      {
+        "ProductName": "智谱",
+        "LLMType": "OpenAI_Compatible",
+        "ApiKey": "cxxxxxxxxxx",
+        "ApiEndpoint": "https://open.bigmodel.cn/api/paas/v4",
+        "ChatCompletion": {
+          "ModelId": "glm-4",
+          "SupportModelIds": [
+            "glm-4",
+            "glm-4-6b"
+          ]
+        }
+      },
+      {
+        "ProductName": "月之暗面",
+        "LLMType": "OpenAI_Compatible",
+        "ApiKey": "sk-ant-api03-0000000000000000000000000000000000000000000000000000000000000000",
+        "ApiEndpoint": "https://api.moonshot.cn/v1",
+        "ChatCompletion": {
+          "ModelId": "moonshot-v1-8k",
+          "SupportModelIds": [
+            "moonshot-v1-8k",
+            "moonshot-v1-16k",
+            "moonshot-v1-128k"
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DataProcess.DataSource.Application</name>
+    </assembly>
+    <members>
+        <member name="T:DataProcess.DataSource.Application.Dto.ApiResponse`1">
+            <summary>
+            统一API响应模型
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Dto.DataSourceInstanceCreateDto">
+            <summary>
+            新建数据源实例参数
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Dto.DslQueryDto">
+            <summary>
+            DSL 查询参数
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Entity.DataSourceInstance">
+            <summary>
+            数据源实例表
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Entity.DataSourceType">
+            <summary>
+            数据源类型表（内置/插件）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Entity.TestLog">
+            <summary>
+            日志库测试表
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Entity.TestTable">
+            <summary>
+            主库测试表
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceDslService">
+            <summary>
+            DSL 查询服务
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDslService.Query(DataProcess.DataSource.Application.Dto.DslQueryDto)">
+            <summary>
+            统一DSL查询（带结构校验和插件沙箱）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceMultiDbService">
+            <summary>
+            多数据源事务示例服务
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceMultiDbService.MultiDbTranDemo">
+            <summary>
+            跨库事务示例（mainDb 和 logDb）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginManager">
+            <summary>
+            插件管理器（支持热插拔）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginSandboxManager">
+            <summary>
+            插件沙箱隔离加载器
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.SystemAppService">
+            <summary>
+            系统服务接口
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.SystemAppService.GetDescription">
+            <summary>
+            获取系统描述
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Utils.DslSchemaValidator">
+            <summary>
+            DSL JSON Schema 校验工具
+            </summary>
+        </member>
+    </members>
+</doc>

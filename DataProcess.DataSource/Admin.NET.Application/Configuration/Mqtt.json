@@ -1,0 +1,13 @@
+﻿{
+  "$schema": "https://gitee.com/dotnetchina/Furion/raw/v4/schemas/v4/furion-schema.json",
+
+  // MQTT 配置
+  "Mqtt": {
+    "Enabled": false, // 是否开启
+    "Port": "1883", // 端口
+    "IPAddress": "", // IP地址
+    "ConnectionBacklog": 1000, // 最大连接数
+    "MqttServerId": "Admin.NET.MQTT", // 服务器主动发消息时的ClientId
+    "Logging": false // 记录日志
+  }
+}

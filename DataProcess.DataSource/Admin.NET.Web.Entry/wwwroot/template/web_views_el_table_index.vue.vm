@@ -1,0 +1,404 @@
+﻿@{
+  var pkField = Model.TableField.Where(c => c.ColumnKey == "True").FirstOrDefault();
+  string pkFieldName = null;
+  if(pkField != null && !string.IsNullOrEmpty(pkField.PropertyName))
+  {
+    pkFieldName = LowerFirstLetter(pkField.PropertyName);
+  }
+  Dictionary<string, int> definedObjects = new Dictionary<string, int>();
+  bool haveLikeCdt = false;
+  foreach (var column in Model.TableField){
+      if (column.QueryWhether == "Y" && column.QueryType == "like"){
+          haveLikeCdt = true;
+      }
+  }
+}
+<template>
+  <div class="@(@Model.LowerClassName)-container">
+    <el-card shadow="hover" :body-style="{ paddingBottom: '0' }"> 
+      @<el-form :model="queryParams" ref="queryForm" labelWidth="90">
+        @<el-row>
+              @if(Model.QueryWhetherList.Count > 0){
+          @if(haveLikeCdt){
+          @:<el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="4" class="mb10">
+            @:<el-form-item label="关键字">
+              @:<el-input v-model="queryParams.searchKey" clearable="" placeholder="请输入模糊查询关键字"/>
+              @:
+            </el-form-item>
+          </el-col>
+          }
+          foreach (var column in Model.QueryWhetherList){
+          @:<el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="4" class="mb10" v-if="showAdvanceQueryUI">
+            if(@column.EffectType == "Input" || @column.EffectType == "InputTextArea"){
+            @:<el-form-item label="@column.ColumnComment">
+              @:<el-input v-model="queryParams.@(@column.LowerPropertyName)" clearable="" placeholder="请输入@(@column.ColumnComment)"/>
+              @:
+            </el-form-item>
+            }else if(@column.EffectType == "InputTextArea"){
+            @:<el-form-item label="@column.ColumnComment">
+              @:<el-input-number v-model="queryParams.@(@column.LowerPropertyName)"  clearable="" placeholder="请输入@(@column.ColumnComment)"/>
+              @:
+            </el-form-item>
+            }else if(@column.EffectType == "InputNumber"){
+            @:<el-form-item label="@column.ColumnComment">
+              @:<el-input-number v-model="queryParams.@(@column.LowerPropertyName)"  clearable="" placeholder="请输入@(@column.ColumnComment)"/>
+              @:
+            </el-form-item>
+            }else if(@column.EffectType == "ForeignKey"){
+            @:<el-form-item label="@column.ColumnComment">
+              @:<el-select clearable="" filterable="" v-model="queryParams.@(@column.LowerPropertyName)" placeholder="请选择@(@column.ColumnComment)">
+                @:<el-option v-for="(item,index) in @LowerFirstLetter(@column.FkEntityName)@(@column.PropertyName)DropdownList" :key="index" :value="item.value" :label="item.label" />
+                @:
+              </el-select>
+              @:
+            </el-form-item>
+            }else if(@column.EffectType == "DictSelector"){
+            @:<el-form-item label="@column.ColumnComment">
+              @:<el-select clearable="" v-model="queryParams.@(@column.LowerPropertyName)" placeholder="请选择@(@column.ColumnComment)">
+                @:<el-option v-for="(item,index) in dl('@(@column.DictTypeCode)')" :key="index" :value="item.code" :label="`[${item.code}] ${item.value}`" />
+                @:
+              </el-select>
+              @:
+            </el-form-item>
+            }else if(@column.EffectType == "EnumSelector"){
+            @:<el-form-item label="@column.ColumnComment">
+              @:<el-select clearable="" v-model="queryParams.@(@column.LowerPropertyName)" placeholder="请选择@(@column.ColumnComment)">
+                @:<el-option v-for="(item,index) in dl('@(@column.DictTypeCode)')" :key="index" :value="item.value" :label="`${item.name} (${item.code}) [${item.value}] `" />
+                @:
+              </el-select>
+              @:
+            </el-form-item>
+            }else if(@column.EffectType == "DatePicker"){
+            @:<el-form-item label="@column.ColumnComment">
+              if(@column.QueryType == "~"){
+              @:<el-date-picker type="daterange" v-model="queryParams.@(@column.LowerPropertyName)Range"  value-format="YYYY-MM-DD HH:mm:ss" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]" />
+              }else
+              {
+              @:<el-date-picker placeholder="请选择@(@column.ColumnComment)" value-format="YYYY/MM/DD"  v-model="queryParams.@(@column.LowerPropertyName)" />
+              }
+              @:
+            </el-form-item>
+            }
+          @:</el-col>
+            } 
+      }
+          @<el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="4" class="mb10">
+            @<el-form-item @(Model.QueryWhetherList.Count > 0?"":"label-width=\"0px\"")>
+              @<el-button-group style="display: flex; align-items: center;">
+                @<el-button type="primary"  icon="ele-Search" @@click="handleQuery" v-auth="'@(@Model.LowerClassName)/page'"> @(Model.QueryWhetherList.Count > 0?"查询":"刷新") </el-button>
+                   @if(Model.QueryWhetherList.Count > 0){
+                      @:<el-button icon="ele-Refresh" @@click="() => queryParams = {}"> 重置 </el-button>
+                        @if(haveLikeCdt){
+                        @:<el-button icon="ele-ZoomIn" @@click="changeAdvanceQueryUI" v-if="!showAdvanceQueryUI" style="margin-left:5px;"> 高级查询 </el-button>
+                        @:<el-button icon="ele-ZoomOut" @@click="changeAdvanceQueryUI" v-if="showAdvanceQueryUI" style="margin-left:5px;"> 隐藏 </el-button>
+                        }
+                    }
+                @<el-button type="primary" style="margin-left:5px;" icon="ele-Plus" @@click="openAdd@(@Model.ClassName)" v-auth="'@(@Model.LowerClassName)/add'"> 新增 </el-button>
+                @
+              </el-button-group>
+            </el-form-item>
+            @
+          @</el-col>
+        </el-row>
+        @* 操作区另起一行
+        @:<el-row>
+          @:<el-col>
+            @:<el-button-group style="margin-left:20px;margin-bottom:5px;">
+              @:<el-button type="primary" icon="ele-Plus" @@click="openAdd@(@Model.ClassName)" v-auth="'@(@Model.LowerClassName)/add'"> 新增 </el-button>
+            </el-button-group>
+          @:</el-col>
+        </el-row>
+		*@
+      </el-form>
+    </el-card>
+    <el-card class="full-table" shadow="hover" style="margin-top: 5px">
+      <el-table
+				:data="tableData"
+				style="width: 100%"
+				v-loading="loading"
+				tooltip-effect="light"
+                @if(@pkFieldName != null)
+                {
+				@:row-key="@(@pkFieldName)"
+                }
+                @@sort-change="sortChange"
+				border="">
+        <el-table-column type="index" label="序号" width="55" align="center"/>
+        @foreach (var column in Model.TableField){
+        if(@column.WhetherTable == "Y"){
+        if(@column.EffectType == "Upload"||@column.EffectType == "ForeignKey"||@column.EffectType == "ApiTreeSelector"||@column.EffectType == "Switch"||@column.EffectType == "ConstSelector"){
+        @:<el-table-column prop="@column.LowerPropertyName" label="@column.ColumnComment" @(column.WhetherSortable == "Y" ? "sortable='custom'" : "") show-overflow-tooltip="">
+          @:<template #default="scope">
+            if(@column.EffectType == "Upload"){
+            @:<el-image
+            @:v-if="scope.row.@column.LowerPropertyName"
+            @:style="width: 60px; height: 60px"
+            @::src="scope.row.@column.LowerPropertyName"
+            @::lazy="true"
+            @::hide-on-click-modal="true"
+            @::preview-src-list="[scope.row.@column.LowerPropertyName]"
+            @::initial-index="0"
+            @:fit="scale-down"
+            @:preview-teleported=""/>
+            }else if(@column.EffectType == "ForeignKey"){
+            @:<span>{{scope.row.@LowerFirstLetter(@column.PropertyName)@(@column.FkColumnName)}}</span>
+            }else if(@column.EffectType == "ApiTreeSelector"){
+            @:<span>{{scope.row.@LowerFirstLetter(@column.PropertyName)@(column.DisplayColumn)}}</span>
+            }else if(@column.EffectType == "Switch"){
+            @:<el-tag v-if="scope.row.@(@column.LowerPropertyName)"> 是 </el-tag>
+            @:<el-tag type="danger" v-else> 否 </el-tag>
+            }else if(@column.EffectType == "ConstSelector"){
+            @:<span>{{codeToName(scope.row.@(@column.LowerPropertyName), '@(@column.DictTypeCode)')}}</span>
+            }
+            @:
+          </template>
+          @:
+        </el-table-column>
+        }
+        else if(@column.EffectType == "DictSelector"){
+          @:<el-table-column prop="@column.LowerPropertyName" label="@column.ColumnComment" @(column.WhetherSortable == "Y" ? "sortable='custom'" : "") show-overflow-tooltip="" >
+            @:<template #default="scope">
+              @:<el-tag :type="dc('@(@column.DictTypeCode)', scope.row.@(@column.LowerPropertyName))?.tagType"> {{dc("@(@column.DictTypeCode)", scope.row.@(@column.LowerPropertyName))?.label}} </el-tag>
+            @:</template>
+          @:</el-table-column>
+        }
+        else if(@column.EffectType == "EnumSelector"){
+          @:<el-table-column prop="@column.LowerPropertyName" label="@column.ColumnComment" @(column.WhetherSortable == "Y" ? "sortable='custom'" : "") show-overflow-tooltip="" >
+            @:<template #default="scope">
+              @:<el-tag :type="dv('@(@column.DictTypeCode)', scope.row.@(@column.LowerPropertyName))?.tagType"> {{dv('@(@column.DictTypeCode)', scope.row.@column.LowerPropertyName)?.name}}</el-tag>
+            @:</template>
+          @:</el-table-column>
+        }
+        else {
+        @:<el-table-column prop="@column.LowerPropertyName" label="@column.ColumnComment" @(column.WhetherSortable == "Y" ? "sortable='custom'" : "") show-overflow-tooltip="" />
+        }
+        }
+        }
+        @if(@Model.PrintType != "off"){
+        @:<el-table-column label="操作" width="200" align="center" fixed="right" show-overflow-tooltip="" v-if="auth('@(@Model.LowerClassName)/update') || auth('@(@Model.LowerClassName)/delete')">
+          @:<template #default="scope">
+            @:<el-button icon="ele-Printer" size="small" text="" type="primary" @@click="openPrint@(@Model.ClassName)(scope.row)" v-auth="'@(@Model.LowerClassName)/print'"> 打印 </el-button>
+        }else{
+        @:<el-table-column label="操作" width="140" align="center" fixed="right" show-overflow-tooltip="" v-if="auth('@(@Model.LowerClassName)/update') || auth('@(@Model.LowerClassName)/delete')">
+          @:<template #default="scope">
+        }
+            <el-button icon="ele-Edit" size="small" text="" type="primary" @@click="openEdit@(@Model.ClassName)(scope.row)" v-auth="'@(@Model.LowerClassName)/update'"> 编辑 </el-button>
+            <el-button icon="ele-Delete" size="small" text="" type="primary" @@click="del@(@Model.ClassName)(scope.row)" v-auth="'@(@Model.LowerClassName)/delete'"> 删除 </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+				v-model:currentPage="tableParams.page"
+				v-model:page-size="tableParams.pageSize"
+				:total="tableParams.total"
+				:page-sizes="[10, 20, 50, 100, 200, 500]"
+				size="small"
+				background=""
+				@@size-change="handleSizeChange"
+				@@current-change="handleCurrentChange"
+				layout="total, sizes, prev, pager, next, jumper"
+	/>
+	@if(@Model.PrintType != "off"){
+      @:<printDialog
+        @:ref="printDialogRef"
+        @::title="print@(@Model.ClassName)Title"
+        @:@@reloadTable="handleQuery" />
+    }
+      <editDialog
+        ref="editDialogRef"
+        :title="edit@(@Model.ClassName)Title"
+        @@reloadTable="handleQuery"
+      />
+    </el-card>
+  </div>
+</template>
+
+<script lang="ts" setup="" name="@(@Model.LowerClassName)">
+  import { ref } from "vue";
+  import { ElMessageBox, ElMessage } from "element-plus";
+  import { auth } from '/@@/utils/authFunction';
+  import { useUserInfo } from '/@@/stores/userInfo';
+
+  import { Local } from '/@@/utils/storage';
+  @if(@Model.TableField.Any(x=>x.EffectType == "DatePicker")){
+  @:import { formatDate } from '/@@/utils/formatTime';
+  }
+
+  @if(@Model.PrintType != "off"){
+  @:// 推荐设置操作 width 为 200
+  @:import { hiprint } from 'vue-plugin-hiprint';
+  @:import { SysPrintApi } from '/@@/api-services/api';
+  @:import { SysPrint } from '/@@/api-services/models';
+  }
+  @if(@Model.PrintType != "off"){
+  @:import printDialog from '/@@/views/system/print/component/hiprint/preview.vue';
+  }
+  import editDialog from '/@@/views/@(@Model.PagePath)/@(@Model.LowerClassName)/component/editDialog.vue'
+  import { page@(@Model.ClassName), delete@(@Model.ClassName) } from '/@@/api/@(@Model.PagePath)/@(@Model.LowerClassName)';
+  @foreach (var column in Model.QueryWhetherList){
+  if(@column.EffectType == "ForeignKey"){
+  @:import { get@(@column.FkEntityName)@(@column.PropertyName)Dropdown } from '/@@/api/@(@Model.PagePath)/@(@Model.LowerClassName)';
+  }
+  }
+  @if(@Model.QueryWhetherList.Any(x=>x.EffectType == "EnumSelector")){
+  @:import { getAPI } from '/@@/utils/axios-utils';
+  @:import { SysEnumApi } from '/@@/api-services/api';
+  @:import commonFunction from '/@@/utils/commonFunction';
+  }
+
+  const userStore = useUserInfo();
+  @if(@Model.TableField.Any(x=>x.EffectType == "ConstSelector")){
+  @:const codeToName = userStore.codeToName;
+  }
+  @if(@Model.TableField.Any(x=>x.EffectType == "DictSelector") || @Model.TableField.Any(x=>x.EffectType == "EnumSelector")){
+  @:const dc = userStore.getDictItemByValue;
+  @:const dv = userStore.getDictItemByLabel;
+  @:const dl = userStore.getDictDataByCode;
+  }
+
+  // 本地存储参数
+  const localPageParamKey = 'localPageParam:@(@Model.LowerClassName)';
+
+  @if(haveLikeCdt){
+  @:const showAdvanceQueryUI = ref(false);
+  }else {
+  @:const showAdvanceQueryUI = ref(true);
+  }
+  @if(@Model.PrintType != "off"){
+  @:const printDialogRef = ref();
+  }
+  const editDialogRef = ref();
+  const loading = ref(false);
+  const tableData = ref<any>([]);
+  const queryParams = ref<any>({});
+  const tableParams = ref({
+    page: 1,
+    pageSize: Local.get(localPageParamKey)?.pageSize || 10,
+    field: 'createTime', // 默认的排序字段
+    order: 'descending', // 排序方向
+    descstr: 'descending', // 降序排序的关键字符
+    total: 0 as any,
+  });
+
+  @if(@Model.PrintType != "off"){
+  @:const print@(@Model.ClassName)Title = ref("");
+  }
+  const edit@(@Model.ClassName)Title = ref("");
+
+  // 改变高级查询的控件显示状态
+  const changeAdvanceQueryUI = () => {
+    showAdvanceQueryUI.value = !showAdvanceQueryUI.value;
+  }
+
+  // 查询操作
+  const handleQuery = async () => {
+    loading.value = true;
+    var res = await page@(@Model.ClassName)(Object.assign(queryParams.value, tableParams.value));
+    tableData.value = res.data.result?.items ?? [];
+    tableParams.value.total = res.data.result?.total;
+    loading.value = false;
+  };
+
+  // 列排序
+  const sortChange = async (column: any) => {
+	tableParams.value.field = column.prop;
+	tableParams.value.order = column.order;
+	await handleQuery();
+  };
+
+  // 打开新增页面
+  const openAdd@(@Model.ClassName) = () => {
+    edit@(@Model.ClassName)Title.value = '添加@(@Model.BusName)';
+    let data = {
+	@foreach (var column in Model.TableField){
+		if(@column.WhetherAddUpdate == "Y"&&@column.DefaultValue!=null){
+			if(@column.NetType.StartsWith("int")||@column.NetType.StartsWith("decimal")){
+		@:@column.LowerPropertyName:@(string.IsNullOrEmpty(@column.DefaultValue)?0:@column.DefaultValue),
+			}
+			if(@column.NetType.StartsWith("string")){
+		@:@column.LowerPropertyName:'@(@column.DefaultValue)',
+			}
+		}
+	}
+	};
+    editDialogRef.value.openDialog(data);
+  };
+
+@if(@Model.PrintType != "off"){
+  @:// 打开打印页面
+  @:const openPrint@(@Model.ClassName) = async (row: any) => {
+    @:print@(@Model.ClassName)Title.value = '打印@(@Model.BusName)';
+    @if(@Model.PrintType != "off"){
+    @:var res = await getAPI(SysPrintApi).apiSysPrintPrintNameGet('@Model.PrintName');
+	  @:var printTemplate = res.data.result as SysPrint;
+    @:var template = JSON.parse(printTemplate.template);
+    @:row['printDate'] = formatDate(new Date(), 'YYYY-mm-dd HH:MM:SS')
+    @:printDialogRef.value.showDialog(new hiprint.PrintTemplate({template: template}), row, template.panels[0].width);
+    }
+  @:}
+}
+  
+  // 打开编辑页面
+  const openEdit@(@Model.ClassName) = (row: any) => {
+    edit@(@Model.ClassName)Title.value = '编辑@(@Model.BusName)';
+    editDialogRef.value.openDialog(row);
+  };
+
+  // 删除
+  const del@(@Model.ClassName) = (row: any) => {
+    ElMessageBox.confirm(`确定要删除吗?`, "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+  .then(async () => {
+    await delete@(@Model.ClassName)(row);
+    handleQuery();
+    ElMessage.success("删除成功");
+  })
+  .catch(() => {});
+  };
+
+  // 改变页面容量
+  const handleSizeChange = (val: number) => {
+    tableParams.value.pageSize = val;
+    Local.set(localPageParamKey, {pageSize:val});
+    handleQuery();
+  };
+
+  // 改变页码序号
+  const handleCurrentChange = (val: number) => {
+    tableParams.value.page = val;
+    handleQuery();
+  };
+
+  @foreach (var column in Model.QueryWhetherList){
+  if(@column.EffectType == "ForeignKey"){
+  @:const @LowerFirstLetter(@column.FkEntityName)@(@column.PropertyName)DropdownList = ref<any>([]); 
+  @:const get@(@column.FkEntityName)@(@column.PropertyName)DropdownList = async () => {
+    @:let list = await get@(@column.FkEntityName)@(@column.PropertyName)Dropdown();
+    @:@LowerFirstLetter(@column.FkEntityName)@(@column.PropertyName)DropdownList.value = list.data.result ?? [];
+  @:};
+  @:get@(@column.FkEntityName)@(@column.PropertyName)DropdownList();
+  @:
+  }
+}
+  handleQuery();
+</script>
+<style scoped>
+:deep(.el-input),
+:deep(.el-select),
+:deep(.el-input-number) {
+	width: 100%;
+}
+:deep(.el-slider .el-input-number){
+	width: auto;
+}
+</style>
+
+@{
+string LowerFirstLetter(string text)
+{
+return text.ToString()[..1].ToLower() + text[1..]; // 首字母小写
+}
+}

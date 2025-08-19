@@ -1,0 +1,64 @@
+﻿{
+  "$schema": "https://gitee.com/dotnetchina/Furion/raw/v4/schemas/v4/furion-schema.json",
+
+  "Urls": "http://*:5005", // 默认端口
+  "AllowedHosts": "*", // 允许所有地址
+
+  "AppSettings": {
+    "InjectSpecificationDocument": true, // 生产环境是否开启Swagger
+    "ExternalAssemblies": [ "plugins" ], // 插件目录
+    "VirtualPath": "" // 二级虚拟目录
+  },
+  "DynamicApiControllerSettings": {
+    //"DefaultRoutePrefix": "api", // 默认路由前缀
+    "CamelCaseSeparator": "", // 驼峰命名分隔符
+    "SplitCamelCase": false, // 切割骆驼(驼峰)/帕斯卡命名
+    "LowercaseRoute": false, // 小写路由格式
+    "AsLowerCamelCase": true, // 小驼峰命名（首字母小写）
+    "KeepVerb": false, // 保留动作方法请求谓词
+    "KeepName": false // 保持原有名称不处理
+  },
+  "FriendlyExceptionSettings": {
+    "DefaultErrorMessage": "系统异常，请联系管理员",
+    "ThrowBah": true, // 是否将 Oops.Oh 默认抛出为业务异常
+    "LogError": false // 是否输出异常日志
+  },
+  // 静态资源处理方式(允许这些文件被访问)，包含".*": "application/octet-stream"允许访问所有静态资源
+  "StaticContentTypeMappings": {
+    ".dll": "application/octet-stream",
+    ".exe": "application/octet-stream",
+    ".pdb": "application/octet-stream",
+    ".so": "application/octet-stream",
+    ".dwg": "application/octet-stream",
+    ".img": "application/octet-stream"
+  },
+  "LocalizationSettings": {
+    "SupportedCultures": [ "zh-CN", "zh-HK", "en", "de", "es", "fi", "fr", "it", "ja", "ko", "no", "pl", "pt", "ru", "zh-TW", "id", "ms", "th", "vi" ], // 语言列表
+    "DefaultCulture": "zh-CN", // 默认语言
+    "DateTimeFormatCulture": "zh-CN" // 固定时间区域为特定时区（多语言）
+  },
+  "CorsAccessorSettings": {
+    //"PolicyName": "App.Cors.Policy", // 跨域策略名称
+    //"WithOrigins": [ "http://localhost:5005", "https://gitee.com" ], // 允许的跨域地址
+    "WithExposedHeaders": [ "Content-Disposition", "X-Pagination", "access-token", "x-access-token", "Access-Control-Expose-Headersx-access-token" ], // 如果前端不代理且是axios请求
+    "SignalRSupport": true // 启用 SignalR 跨域支持
+  },
+  // 定时任务/作业调度
+  "JobSchedule": {
+    "Enabled": true // 是否开启
+  },
+  // 雪花Id
+  "SnowId": {
+    "WorkerId": 1, // 雪花Id机器码，多服务器时全局唯一
+    "WorkerIdBitLength": 6, // 机器码位长 默认值6，取值范围 [1, 19]
+    "SeqBitLength": 6, // 序列数位长 默认值6，取值范围 [3, 21]（建议不小于4，值越大性能越高、Id位数也更长）
+    "WorkerPrefix": "adminnet_" // 缓存前缀
+  },
+  // 密码策略
+  "Cryptogram": {
+    "CryptoType": "SM2", // 密码加密算法：MD5、SM2、SM4
+    // 业务系统记得改密匙（修改密匙要重新生成数据库/账号表），通过接口(http://localhost:5005/api/sysCommon/smKeyPair)获取
+    "PublicKey": "04851D329AA3E38C2E7670AFE70E6E70E92F8769CA27C8766B12209A0FFBA4493B603EF7A0B9B1E16F0E8930C0406EA0B179B68DF28E25334BDEC4AE76D907E9E9", // 公钥
+    "PrivateKey": "3A61D1D30C6302DABFF36201D936D0143EEF0C850AF28C5CA6D5C045AF8C5C8A" // 私钥
+  }
+}

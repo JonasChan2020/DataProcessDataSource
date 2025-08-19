@@ -1,0 +1,478 @@
+﻿// Admin.NET 项目的版权、商标、专利和其他相关权利均受相应法律法规的保护。使用本项目应遵守相关法律法规和许可证的要求。
+//
+// 本项目主要遵循 MIT 许可证和 Apache 许可证（版本 2.0）进行分发和使用。许可证位于源代码树根目录中的 LICENSE-MIT 和 LICENSE-APACHE 文件。
+//
+// 不得利用本项目从事危害国家安全、扰乱社会秩序、侵犯他人合法权益等法律法规禁止的活动！任何基于本项目二次开发而产生的一切法律纠纷和责任，我们不承担任何责任！
+
+using Admin.NET.Core.Service;
+using Microsoft.AspNetCore.Http;
+using System.Linq.Expressions;
+using Furion.EventBus;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+@{
+    string joinTableName = "u";
+    Dictionary<string, int> definedObjects = new Dictionary<string, int>();
+    bool haveLikeCdt = false;
+    string RemoteField="";
+    string PKName="";
+    foreach (var column in Model.TableField){
+        if (column.QueryWhether == "Y" && column.QueryType == "like"){
+            haveLikeCdt = true;
+        }
+        if(column.RemoteVerify){
+            RemoteField=@column.PropertyName;
+        }
+        if(column.ColumnKey == "True"){
+            PKName=column.PropertyName;
+        }
+    }
+}
+
+namespace @Model.NameSpace;
+
+/// <summary>
+/// @(@Model.BusName)服务
+/// </summary>
+[ApiDescriptionSettings(@(@Model.ProjectLastName)Const.GroupName, Name = "@(@Model.LowerClassName)", Order = 100)]
+public partial class @(@Model.ClassName)Service : IDynamicApiController, ITransient
+{
+    private readonly SysCacheService _sysCacheService;//默认CacheService
+    private readonly UserManager _userManager;//默认用户管理
+    private readonly IEventPublisher _eventPublisher;//默认事件总线
+    private readonly SqlSugarRepository<@(@Model.ClassName)> _@(@Model.LowerClassName)Rep;
+    @foreach (var column in Model.TableField){
+                if(@column.EffectType == "ForeignKey"||@column.EffectType == "ApiTreeSelector"){
+                   if(@column.FkEntityName != @Model.ClassName){
+    @:private readonly SqlSugarRepository<@(@column.FkEntityName)> _@(@column.LowerFkEntityName)Rep;
+                   }
+                }
+    }
+    private TypeAdapterConfig _typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
+
+    public @(@Model.ClassName)Service(SqlSugarRepository<@(@Model.ClassName)> @(@Model.LowerClassName)Rep
+        ,SysCacheService sysCacheService
+        , UserManager userManager
+        ,IEventPublisher eventPublisher
+    @foreach (var column in Model.TableField){
+                if(@column.EffectType == "ForeignKey"||@column.EffectType == "ApiTreeSelector"){
+                   if(@column.FkEntityName != @Model.ClassName){
+      @:,SqlSugarRepository<@(@column.FkEntityName)> @(@column.LowerFkEntityName)Rep
+                   }
+                }
+    } 
+    
+    )
+    {
+        _@(@Model.LowerClassName)Rep = @(@Model.LowerClassName)Rep;
+    @foreach (var column in Model.TableField){
+                if(@column.EffectType == "ForeignKey"||@column.EffectType == "ApiTreeSelector"){
+                   if(@column.FkEntityName != @Model.ClassName){
+      @:_@(@column.LowerFkEntityName)Rep = @(@column.LowerFkEntityName)Rep;
+                   }
+                }
+    }
+        _typeAdapterConfig.ForType<T, @(@Model.ClassName)>().IgnoreNullValues(true);
+        _sysCacheService = sysCacheService;
+        _eventPublisher = eventPublisher;
+        _userManager = userManager;
+    }
+
+    /// <summary>
+    /// 分页查询@(@Model.BusName)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>    
+    [ApiDescriptionSettings(Name = "Page", Description = "分页查询", Order = 1000), HttpPost]
+    [DisplayName("分页查询@(@Model.BusName)")]
+    public async Task<SqlSugarPagedList<Page@(@Model.ClassName)Output>> Page(Page@(@Model.ClassName)Input input)
+    {
+        var list = await @(@Model.ClassName)Mid.GetQuery(_@(@Model.LowerClassName)Rep, input).Select<Page@(@Model.ClassName)Output>().OrderBuilder(input).ToPagedListAsync(input.Page, input.PageSize);
+        return list;      
+    }
+
+    /// <summary>
+    /// 增加@(@Model.BusName)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [ApiDescriptionSettings(Name = "Add", Description = "增加@(@Model.BusName)", Order = 990), HttpPost]
+    [DisplayName("增加@(@Model.BusName)")]
+    public async Task<object> Add(Add@(@Model.ClassName)Input input)
+    {
+        var entity = input.Adapt<@(@Model.ClassName)>(_typeAdapterConfig);
+    	@if(Model.RemoteVerify){
+        @://验证重复值
+        @:if (await _@(@Model.LowerClassName)Rep.IsAnyAsync(t => t.@(RemoteField) == entity.@(RemoteField)))
+        @:{
+            @://已存在
+            @:throw Oops.Oh(ErrorCodeEnum.D1006);
+        @:}
+        }
+        await _@(@Model.LowerClassName)Rep.InsertAsync(entity);
+        return entity.@(@PKName);
+    }
+
+    /// <summary>
+    /// 删除@(@Model.BusName)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [ApiDescriptionSettings(Name = "Delete", Description = "删除(@Model.BusName)", Order = 980), HttpPost]
+    [DisplayName("删除@(@Model.BusName)")]
+    public async Task Delete(Delete@(@Model.ClassName)Input input)
+    {
+@foreach (var column in Model.TableField){
+if (@column.ColumnKey == "True"){
+        @:var entity = await _@(@Model.LowerClassName)Rep.GetFirstAsync(u => u.@(@column.PropertyName) == input.@(@column.PropertyName)) ?? throw Oops.Oh(ErrorCodeEnum.D1002);
+}
+}
+
+        //HJ:通过模板判断是否存在IsDelete字段，决定删除方式
+    @if (Model.TableField.Any(c => c.PropertyName == "IsDelete"))
+    {
+        @:await _@(Model.LowerClassName)Rep.FakeDeleteAsync(entity); // 假删除（存在IsDelete字段）
+    }
+    else
+    {
+        @:await _@(Model.LowerClassName)Rep.DeleteAsync(entity); // 真删除（不存在IsDelete字段）
+    }
+    }
+
+    /// <summary>
+    /// 更新@(@Model.BusName)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [ApiDescriptionSettings(Name = "Update", Description = "更新@(@Model.BusName)", Order = 970), HttpPost]
+    [DisplayName("更新@(@Model.BusName)")]
+    public async Task Update(Update@(@Model.ClassName)Input input)
+    {
+        var entity = input.Adapt<@(@Model.ClassName)>(_typeAdapterConfig);
+        entity.Id = input.Id;
+        @if(Model.RemoteVerify){
+        @://验证重复值
+        @:if (await _@(@Model.LowerClassName)Rep.IsAnyAsync(t => t.@(RemoteField) == entity.@(RemoteField) && t.@(@PKName) != entity.@(@PKName)))
+        @:{
+            @://已存在
+            @:throw Oops.Oh(ErrorCodeEnum.D1006);
+        @:}
+        }
+        await _@(@Model.LowerClassName)Rep.AsUpdateable(entity).IgnoreColumns(ignoreAllNullColumns: true).ExecuteCommandAsync();
+    }
+
+    /// <summary>
+    /// 获取@(@Model.BusName)详情
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [ApiDescriptionSettings(Name = "Detail", Description = "获取@(@Model.BusName)", Order = 960), HttpGet]
+    [DisplayName("获取@(@Model.BusName)")]
+    public async Task<@(@Model.ClassName)> Detail([FromQuery] QueryById@(@Model.ClassName)Input input)
+    {
+@foreach (var column in Model.TableField){
+if (@column.ColumnKey == "True"){
+        @:return await _@(@Model.LowerClassName)Rep.GetFirstAsync(u => u.@(@column.PropertyName) == input.@(@column.PropertyName));
+}   
+}            
+    }
+
+    /// <summary>
+    /// 导入@(@Model.BusName)
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    [DisplayName("导入@(@Model.BusName)")]
+    public async Task Import([Required] IFormFile file)
+    {
+        using MemoryStream stream = new();
+        await file.CopyToAsync(stream);
+
+        var res = await new ExcelImporter().Import<@(@Model.ClassName)Dto>(stream);
+
+        if (res == null || res.Exception != null)
+            throw Oops.Oh(res.Exception);
+
+        var importData = res.Data.ToList();
+        // 按照编码条件进行批量更新或者新增
+        await _@(@Model.LowerClassName)Rep.Context.Storageable(importData.Adapt<List<@(@Model.ClassName)>>()).WhereColumns(u => u.Id).ExecuteCommandAsync();
+    }
+
+    /// <summary>
+    /// 导出@(@Model.BusName)
+    /// </summary>
+    /// <returns></returns>
+    [DisplayName("导出@(@Model.BusName)")]
+    public async Task<IActionResult> Export(Page@(@Model.ClassName)Input input)
+    {
+
+        var list = await @(@Model.ClassName)Mid.GetQuery(_@(@Model.LowerClassName)Rep, input).Select<@(@Model.ClassName)Dto>().OrderBuilder(input).ToListAsync();
+
+        if (list == null || list.Count < 1)
+            throw Oops.Oh("数据为空，导出已取消");
+
+        var res = await new ExcelExporter().ExportAsByteArray(list);
+        return new FileStreamResult(new MemoryStream(res), "application/octet-stream") { FileDownloadName = DateTime.Now.ToString("yyyyMMddHHmm") + "@(@Model.BusName)列表.xlsx" };
+    }
+
+    /// <summary>
+    /// 下载导入@(@Model.BusName)模板
+    /// </summary>
+    /// <returns></returns>
+    [DisplayName("下载导入@(@Model.BusName)模板")]
+    public async Task<IActionResult> DownloadTemplate()
+    {
+        var res = await new ExcelImporter().GenerateTemplateBytes<@(@Model.ClassName)Dto>();
+        return new FileStreamResult(new MemoryStream(res), "application/octet-stream") { FileDownloadName = "@(@Model.BusName)导入模板.xlsx" };
+    }
+
+
+    /*HJ:不要,有分页了,列表多余的
+    /// <summary>
+    /// 获取@(@Model.BusName)列表
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [ApiDescriptionSettings(Name = "list", Description = "获取@(@Model.BusName)列表", Order = 950), HttpPost]
+    [DisplayName("获取@(@Model.BusName)列表")]
+    public async Task<List<@(@Model.ClassName)Output>> List(Page@(@Model.ClassName)Input input)
+    {
+        return await @(@Model.ClassName)Mid.GetQuery(_@(@Model.LowerClassName)Rep, input).OrderBuilder(input).ToListAsync();
+    }
+    */
+
+    /*HJ:不要这应该在视图里,或者用ReZero里用
+    /// <summary>
+    /// 获取@(@Model.BusName)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [ApiDescriptionSettings(Name = "GetTotalSum", Description = "获取@(@Model.BusName)统计", Order = 960), HttpPost]
+    [DisplayName("获取@(@Model.BusName)统计")]
+    public async Task<List<@(@Model.ClassName)Output>> GetTotalSum(Page@(@Model.ClassName)Input input)
+    {
+        // 单次查询同时获取统计值
+        var querystats = @(@Model.ClassName)Mid.GetQuery(_@(@Model.LowerClassName)Rep, input)
+        @if(@Model.TableField.Any(x=>x.IsGroupBy == "Y")){
+        @foreach (var column in Model.TableField){
+        if (@column.IsGroupBy == "Y"){
+        @:    .GroupByIF(input.GroupBy.Contains("@column.PropertyName"), u => u.@column.PropertyName)
+        } 
+        }
+        @:  //.Having(it => SqlFunc.AggregateCount(it.Id) > 0)//聚合函数过滤
+        }
+          .Select(it => new @(@Model.ClassName)Output
+          {
+              // count = SqlFunc.AggregateCount(it.Id),
+        @foreach (var column in Model.TableField){
+        if (@column.IsGroupBy == "Y"){
+        @:      @(@column.PropertyName) = it.@(@column.PropertyName),
+        }
+        if (@column.Statistical == "Y"){
+        @:      @(@column.PropertyName) = SqlFunc.AggregateSum(it.@(@column.PropertyName)) ?? 0,
+        }
+        }
+          });
+        return await querystats.ToListAsync();
+    }
+    */
+
+    /*HJ:不要危险度大,容易SQL注入,且不符合规范
+    /// <summary>
+    /// 根据输入参数获取@(@Model.BusName)统计
+    /// 支持双模式聚合配置：
+    /// 常规模式：Field + Function
+    /// 高级模式：CustomExpression（支持任意合法SQL表达式）
+    /// 智能条件组合：
+    /// 多个HAVING条件自动用AND连接
+    /// 条件表达式自动包裹聚合函数（如SUM(cost) > 10000）
+    /// 可扩展支持OR条件
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [ApiDescriptionSettings(Name = "GetAggregTotalSum", Order = 970), HttpPost]
+    [DisplayName("根据输入参数获取@(@Model.BusName)统计")]
+    public async Task<List<@(@Model.ClassName)Output>> GetAggregTotalSum(Page@(@Model.ClassName)Input input)
+    {
+        
+        var query = @(@Model.ClassName)Mid.GetQuery(_@(@Model.LowerClassName)Rep, input);
+        // 输入参数示例
+        //input = new Page@(@Model.ClassName)Input
+        //{
+        //    GroupBy = ["department", "project"],
+        //    GroupBy = input.GroupBy,
+        //    Aggregations =
+        //    [
+        //        new AggregationConfig
+        //{
+        //    Field = "cost",
+        //    Function = AggregateFunction.Sum,
+        //    Alias = "totalCost",
+        //    HavingCondition = "> 10000"
+        //},
+        //new AggregationConfig
+        //{
+        //    CustomExpression = "AVG(CAST(response_time AS FLOAT))",
+        //    Alias = "avgResponse",
+        //    HavingCondition = "< 500"
+        //}
+        //    ]
+        //};
+        // 生成SQL示例
+        // SELECT
+        //     department, project,
+        // SUM(cost) AS totalCost,
+        // AVG(CAST(response_time AS FLOAT)) AS avgResponse
+        // FROM...
+        // GROUP BY department, project
+        // HAVING(SUM(cost) > 10000) AND(AVG(CAST(response_time AS FLOAT)) < 500)
+        @if(@Model.TableField.Any(x=>x.Statistical == "Y")){
+
+        @:// 处理分组字段
+        @:var groupFields = AggregationBuilder.ValidateFields<@(@Model.ClassName)Output>(input.GroupBy, typeof(@(@Model.ClassName)Output));
+        @:if (groupFields.Count > 0)
+        @:{
+        @:    query = query.GroupBy(string.Join(",", groupFields));
+        @:}
+        @:// 构建聚合配置
+        @:var aggregator = new AggregationBuilder(
+        @:    configs: input.Aggregations,
+        @:    entityType: typeof(@(@Model.ClassName)),
+        @:    outputType: typeof(@(@Model.ClassName)Output)
+        @:);
+
+        @:// 组合SELECT语句
+        @:var selectParts = groupFields.Select(f => $"{f} AS {f}")
+        @:    .Concat(aggregator.SelectParts)
+        @:    .ToList();
+
+        @:// 应用HAVING条件
+        @:if (aggregator.HavingConditions.Count > 0)
+        @:{
+        @:    query = query.Having(string.Join(" AND ", aggregator.HavingConditions));
+        @:}
+        
+        @:// 执行查询
+        @:return await query.Select<@(@Model.ClassName)Output>(string.Join(", ", selectParts)).ToListAsync();
+        }
+        else
+        {
+        @:return await query.ToListAsync();
+        }
+    }
+
+    */
+    
+@foreach (var column in Model.TableField){
+if(@column.EffectType == "ForeignKey" && (@column.WhetherAddUpdate == "Y" || column.QueryWhether == "Y")){  
+    @:/// <summary>
+    @:/// 获取@(@column.ColumnComment)列表
+    @:/// </summary>
+    @:/// <returns></returns>
+    @:[ApiDescriptionSettings(Name = "@(LowerFirstLetter(@column.FkEntityName))@(@column.PropertyName)Dropdown", Description = "获取@(@column.ColumnComment)列表", Order = 940), HttpGet]
+    @:[DisplayName("获取@(@column.ColumnComment)列表")]
+    @:public async Task<List<LabelValueOutput>> @(@column.FkEntityName)@(@column.PropertyName)Dropdown()
+    @:{
+        @:return (await _@(@column.LowerFkEntityName)Rep.GetListAsync(t => t.Id > 0))
+                @:.Select(u => new LabelValueOutput
+                @:{
+                    @:Label = u.@(@column.FkColumnName),
+                    @:Value = u.@(@column.FkLinkColumnName).ToString()
+                @:}
+                @:).ToList();
+    @:}
+}
+}
+
+@foreach (var column in Model.TableField){
+if(@column.EffectType == "Upload"){  
+    @:/// <summary>
+    @:/// 上传@(@column.ColumnComment)
+    @:/// </summary>
+    @:/// <param name="file"></param>
+    @:/// <returns></returns>
+    @:[ApiDescriptionSettings(Name = "Upload@(@column.PropertyName)",  Description = "上传@(@column.ColumnComment)", Order = 930), HttpPost]
+    @:[DisplayName("上传@(@column.ColumnComment)")]
+    @:public async Task<SysFile> Upload@(@column.PropertyName)([Required] IFormFile file)
+    @:{
+            @:var service = App.GetRequiredService<SysFileService>();
+            @:return await service.UploadFile(new UploadFileInput { File = file},   "upload/@(@column.PropertyName)" ); 
+    @:} 
+}
+}
+
+@foreach (var column in Model.TableField){
+ 
+if(@column.EffectType == "ApiTreeSelector" && !definedObjects.ContainsKey("@(@column.FkEntityName)Tree")){
+    @:/// <summary>
+    @:/// 获取@(@Model.BusName)树列表
+    @:/// </summary>
+    @:/// <param name="input"></param>
+    @:/// <returns></returns>
+    @:[ApiDescriptionSettings(Name = "Tree", Description = "获取@(@Model.BusName)树列表", Order = 960), HttpPost]
+    @:[DisplayName("获取@(@Model.BusName)树列表")]
+    @:public async Task<dynamic> Tree(Page@(@Model.ClassName)Input input)
+    @:{
+
+        @:// 有筛选条件时返回list列表（防止构造不出树）
+        @:var isSearch=false;
+ 
+          foreach (var columnTree in Model.TableField){
+        if (@columnTree.QueryWhether == "Y"){
+            if (@columnTree.NetType?.TrimEnd('?') == "string"){
+        @:if(!string.IsNullOrWhiteSpace(input.@columnTree.PropertyName))isSearch=true;
+              
+            }else if((@columnTree.NetType?.TrimEnd('?') == "int" || @columnTree.NetType?.TrimEnd('?') == "long")){
+        @:if(input.@columnTree.PropertyName>0)isSearch=true;
+             
+            }else if((@columnTree.NetType?.TrimEnd('?') == "DateTime" && @columnTree.QueryType == "~")){
+         @:if(input.@(@columnTree.PropertyName)Range != null)isSearch=true;
+            } }}
+      
+
+        @:if (isSearch||!string.IsNullOrEmpty(input.SearchKey?.Trim()))
+        @:{
+        @:// 有筛选条件时返回列表
+        @:return await @(@Model.ClassName)Mid.GetQuery(_@(@Model.LowerClassName)Rep, input).OrderBuilder(input).Distinct().ToListAsync();
+        @:}
+
+        @:// 无筛选条件时返回树列表
+        @:return await @(@Model.ClassName)Mid.GetQuery(_@(@Model.LowerClassName)Rep, input).OrderBuilder(input).ToTreeAsync(u => u.Children, u => u.Pid, 0, u => u.Id);
+    @:}
+}
+}
+
+@if(Model.RemoteVerify){
+    @:/// <summary>
+    @:/// 检查@(RemoteField)字段是否可用
+    @:/// </summary>
+    @:/// <param name="param">检查字段参数</param>
+    @:/// <returns></returns>
+    @:[ApiDescriptionSettings(Name = "exists@(RemoteField)",Description = "检查@(RemoteField)字段是否可用", Order = 910), HttpPost]
+    @:[DisplayName("检查@(RemoteField)字段是否可用")]
+    @:public async Task<bool> Exists@(RemoteField)Async(Exists@(RemoteField)Input param)
+    @:{
+        @:if (string.IsNullOrWhiteSpace(param.FieldValue))
+        @:{
+            @:return false;
+        @:}
+        @:if (!string.IsNullOrWhiteSpace(param.OldFieldValue))
+        @:{
+            @:if (param.FieldValue.Trim() == param.OldFieldValue.Trim())
+            @:{
+                @://编辑状态下触发的
+                @:return true;
+            @:}
+        @:}
+
+        @:return !(await _@(@Model.LowerClassName)Rep.IsAnyAsync(t => t.@(RemoteField).Equals(param.FieldValue.Trim())));
+    @:}
+}
+
+}
+
+@{
+string LowerFirstLetter(string text)
+{
+return text.ToString()[..1].ToLower() + text[1..]; // 首字母小写
+}
+}

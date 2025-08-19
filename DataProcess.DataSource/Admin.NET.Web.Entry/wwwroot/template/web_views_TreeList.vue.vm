@@ -1,0 +1,554 @@
+﻿@{
+	string LowerFirstLetter(string text)
+	{
+		return text.ToString()[..1].ToLower() + text[1..]; // 首字母小写
+	}
+	var pkField = Model.TableField.Where(c => c.ColumnKey == "True").FirstOrDefault();
+	string pkFieldName = null;
+	if(pkField != null && !string.IsNullOrEmpty(pkField.PropertyName))
+	{
+		pkFieldName = LowerFirstLetter(pkField.PropertyName);
+	}
+	Dictionary<string, int> definedObjects = new Dictionary<string, int>();
+	bool haveLikeCdt = false;
+	foreach (var column in Model.TableField){
+		if (column.QueryWhether == "Y" && column.QueryType == "like"){
+			haveLikeCdt = true;
+		}
+	}
+}
+<template>
+		<el-card shadow="hover" :body-style="{ padding: '20px 20px 16px 10px', display: 'flex', width: '100%', height: '100%', alignItems: 'start' }">
+			<el-form :model="state.queryParams" ref="queryForm" :show-message="false" :inlineMessage="true" label-width="auto" style="flex: 1 1 0%" @@submit.prevent="handleQuery" >
+				<el-row :gutter="10">
+				@if(Model.QueryWhetherList.Count > 0){
+					<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="mb5">
+						<el-form-item :label="$t('message.list.searchKey')"  prop="searchKey">
+							<el-input v-model="state.queryParams.searchKey" :placeholder="$t('message.list.searchKeyInput')" clearable @@keyup.enter.native="handleQuery(true)" />
+						</el-form-item>
+					</el-col>
+					foreach (var column in Model.QueryWhetherList) {
+						if(@column.EffectType == "Input" || @column.EffectType == "InputTextArea") {
+					<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="mb5" v-if="state.showAdvanceQueryUI">
+						<el-form-item :label="$t('message.@Model.LowerClassName.@column.LowerPropertyName')" prop="@(@column.LowerPropertyName)">
+							<el-input v-model="state.queryParams.@(@column.LowerPropertyName)" :placeholder="$t('message.@Model.LowerClassName.@column.LowerPropertyName')" clearable @@keyup.enter.native="handleQuery(true)" />
+						</el-form-item>
+					</el-col>
+						} else if(@column.EffectType == "InputNumber") {
+					<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="mb5" v-if="state.showAdvanceQueryUI">
+						<el-form-item :label="$t('message.@Model.LowerClassName.@column.LowerPropertyName')">
+							<el-input-number v-model="state.queryParams.@(@column.LowerPropertyName)" :placeholder="$t('message.list.pleaseInput') + $t('message.@Model.LowerClassName.@column.LowerPropertyName')" clearable @@keyup.enter.native="handleQuery(true)" />
+					</el-form-item>
+					</el-col>
+						} else if(@column.EffectType == "ForeignKey") {
+					<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="mb5" v-if="state.showAdvanceQueryUI">
+						<el-form-item :label="$t('message.@Model.LowerClassName.@column.LowerPropertyName')">
+							<el-select filterable="" v-model="state.queryParams.@(@column.LowerPropertyName)" :placeholder="$t('message.list.pleaseChoose') + $t('message.@Model.LowerClassName.@column.LowerPropertyName')" clearable>
+								<el-option v-for="(item,index) in @LowerFirstLetter(@column.FkEntityName)@(@column.PropertyName)DropdownList" :key="index" :value="item.value" :label="item.label" />
+							</el-select>
+						</el-form-item>
+					</el-col>
+						} else if(@column.EffectType == "DictSelector") {
+					<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="mb5" v-if="state.showAdvanceQueryUI">
+						<el-form-item :label="$t('message.@Model.LowerClassName.@column.LowerPropertyName')" prop="@(@column.LowerPropertyName)">
+							<el-select v-model="state.queryParams.@(@column.LowerPropertyName)" filterable :placeholder="$t('message.list.pleaseChoose') + $t('message.@Model.LowerClassName.@column.LowerPropertyName')" clearable @@keyup.enter.native="handleQuery(true)" >
+								<el-option v-for="(item,index) in dl('@(@column.DictTypeCode)')" :key="index" :value="item.value" :label="`${item.label} [${item.code}] ${item.value}`" />
+							</el-select>
+						</el-form-item>
+					</el-col>
+						} else if(@column.EffectType == "EnumSelector") {
+					<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="mb5" v-if="state.showAdvanceQueryUI">
+						<el-form-item :label="$t('message.@Model.LowerClassName.@column.LowerPropertyName')" prop="@(@column.LowerPropertyName)">
+							<el-select v-model="state.queryParams.@(@column.LowerPropertyName)" filterable :placeholder="$t('message.list.pleaseChoose') + $t('message.@Model.LowerClassName.@column.LowerPropertyName')" clearable @@keyup.enter.native="handleQuery(true)" >
+								<el-option v-for="(item,index) in dl('@(@column.DictTypeCode)')" :key="index" :value="item.value" :label="`${item.label} [${item.code}] ${item.value}`" />
+							</el-select>
+						</el-form-item>
+					</el-col>
+						} else if(@column.EffectType == "ApiTreeSelector") {
+					<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="mb5" v-if="state.showAdvanceQueryUI">
+						<el-form-item :label="$t('message.@Model.LowerClassName.@column.LowerPropertyName')" prop="@(@column.LowerPropertyName)">
+							<el-cascader
+								@:options="@LowerFirstLetter(@column.FkEntityName)TreeData"
+								@:props="{ checkStrictly: true, emitPath: false, value: '@LowerFirstLetter(@column.ValueColumn)', label: '@LowerFirstLetter(@column.DisplayColumn)' }"
+								:placeholder="$t('message.list.pleaseChoose') + $t('message.@Model.LowerClassName.@column.LowerPropertyName')"
+								clearable=""
+								class="w100"
+								v-model="state.queryParams.@(@column.LowerPropertyName)"
+							>
+								<template #default="{ node, data }">
+									<span>{{ data.@LowerFirstLetter(@column.DisplayColumn) }}</span>
+									<span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
+								</template>
+							</el-cascader>
+						</el-form-item>
+					</el-col>
+						} else if(@column.EffectType == "DatePicker") {
+					<el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="mb5" v-if="state.showAdvanceQueryUI">
+						<el-form-item :label="$t('message.@Model.LowerClassName.@column.LowerPropertyName')" prop="@(@column.LowerPropertyName)">
+							@if(@column.QueryType == "~"){
+							@:<el-date-picker type="daterange" v-model="state.queryParams.@(@column.LowerPropertyName)Range"  value-format="YYYY-MM-DD HH:mm:ss" :start-placeholder="$t('message.list.beginTime')" :end-placeholder="$t('message.list.endTime')" :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]" />
+							} else {
+							@:<el-date-picker :placeholder="$t('message.list.pleaseChoose') + $t('message.@Model.LowerClassName.@column.LowerPropertyName')" value-format="YYYY/MM/DD"  v-model="state.queryParams.@(@column.LowerPropertyName)" />
+							}
+						</el-form-item>
+					</el-col>
+						}
+					}
+				}
+				</el-row>
+			</el-form>
+
+			<el-divider style="height: calc(100% - 5px); margin: 0 10px" direction="vertical" />
+
+			<el-row>
+				<el-col>
+					<el-button-group>
+						<el-button type="primary" icon="ele-Search" @@click="handleQuery(true)" v-auth="'@(@Model.LowerClassName)/page'" :loading="options.loading"> {{ $t('message.list.search') }}  </el-button>
+						<el-button icon="ele-Refresh" @@click="resetQuery" :loading="options.loading"> {{ $t('message.list.refresh') }}  </el-button>
+						<el-button icon="ele-ZoomIn" @@click="changeAdvanceQueryUI" v-if="!state.showAdvanceQueryUI" style="margin-left: 5px"> {{ $t('message.list.zoomIn') }}  </el-button>
+						<el-button icon="ele-ZoomOut" @@click="changeAdvanceQueryUI" v-if="state.showAdvanceQueryUI" style="margin-left: 5px"> {{ $t('message.list.zoomOut') }}  </el-button>
+					</el-button-group>
+				</el-col>
+			</el-row>
+		</el-card>
+
+		<el-card class="full-table" shadow="hover" style="margin-top: 5px">
+			<vxe-grid ref="xGrid" class="xGrid-style" v-bind="options" v-on="gridEvents">
+				<template #toolbar_buttons>
+					<el-button type="primary" icon="ele-Plus" @@click="handleAdd" v-auth="'@(@Model.LowerClassName)/add'"> {{ $t('message.list.add') }} </el-button>
+					<el-button-group style="padding-left: 12px">
+						<el-button type="primary" icon="ele-Expand" @@click="handleExpand"> {{ $t('message.list.expand') }} </el-button>
+						<el-button type="primary" icon="ele-Fold" @@click="handleFold"> {{ $t('message.list.fold') }} </el-button>
+					</el-button-group>
+				</template>
+				<template #toolbar_tools> </template>
+				<template #empty>
+					<el-empty :image-size="200" />
+				</template>
+				@foreach (var column in Model.TableField) {
+
+					if(@column.WhetherTable == "Y") {
+						if(@column.EffectType == "Upload") {
+				@:<template #row_@(@column.LowerPropertyName)="{ row }">
+					@:<el-popover
+						@:v-if="row.@column.LowerPropertyName"
+						@:placement="bottom"
+						@::width="60"
+						@::height="60"
+						@:trigger="hover">
+						@:<template #reference>
+							@:<el-tag>{{ $t('message.list.seeFile') }}</el-tag>
+						@:</template>
+						@:<template #default>
+							@:<el-image
+								@::src="row.@column.LowerPropertyName"
+								@::hide-on-click-modal="true"
+								@::preview-src-list="[row.@column.LowerPropertyName]"
+								@::initial-index="0"
+								@:fit="scale-down"
+								@:preview-teleported=""/>
+						@:</template>
+					@:</el-popover>
+					@:<el-tag v-else type="info">{{ $t('message.list.noFile') }}</el-tag>
+				@:</template>
+						} else if(@column.EffectType == "ForeignKey") {
+				@:<template #row_@(@column.LowerPropertyName)="{ row }">
+					@:<span>{{ row.@LowerFirstLetter(@column.PropertyName)@(@column.FkColumnName) }}</span>
+				@:</template>
+						} else if(@column.EffectType == "ApiTreeSelector") {
+				@:<template #row_@(@column.LowerPropertyName)="{ row }">
+					@:<span>{{ row.@LowerFirstLetter(@column.PropertyName)@(column.DisplayColumn) }}</span>
+				@:</template>
+						} else if(@column.EffectType == "Switch") {
+				@:<template #row_@(@column.LowerPropertyName)="{ row }">
+					@:<el-tag v-if="row.@(@column.LowerPropertyName)"> {{ $t('message.list.yes') }} </el-tag>
+					@:<el-tag type="danger" v-else> {{ $t('message.list.no') }} </el-tag>
+				@:</template>
+						} else if(@column.EffectType == "ConstSelector") {
+				@:<template #row_@(@column.LowerPropertyName)="{ row }">
+					@:<span>{{codeToName(row.@(@column.LowerPropertyName), '@(@column.DictTypeCode)')}}</span>
+				@:</template>
+						} else if(@column.EffectType == "DictSelector") {
+				@:<template #row_@(@column.LowerPropertyName)="{ row }">
+					@:<el-tag  v-if="row.@(@column.LowerPropertyName)" :type="dc('@(@column.DictTypeCode)', row.@(@column.LowerPropertyName))?.tagType"> {{dc('@(@column.DictTypeCode)', row.@column.LowerPropertyName)?.label}}</el-tag>
+				@:</template>
+						} else if(@column.EffectType == "EnumSelector") {
+				@:<template #row_@(@column.LowerPropertyName)="{ row }">
+					@:<el-tag :type="dv('@(@column.DictTypeCode)', row.@(@column.LowerPropertyName))?.tagType"> {{dv('@(@column.DictTypeCode)', row.@column.LowerPropertyName)?.name}}</el-tag>
+				@:</template>
+						}
+					}
+				}
+				<template #row_record="{ row }">
+					<ModifyRecord :data="row" />
+				</template>
+				<template #row_buttons="{ row }">
+					@if(@Model.PrintType != "off") {
+					<el-tooltip content="打印" placement="top">
+						<el-button icon="ele-Printer" size="small" text type="primary" @@click="handlePrint(row)" v-auth="'@(@Model.LowerClassName)/print'" />
+					</el-tooltip>
+					}
+					<el-tooltip :content="$t('message.list.edit')" placement="top">
+						<el-button icon="ele-Edit" size="small" text type="primary" @@click="handleEdit(row)" v-auth="'@(@Model.LowerClassName)/update'" />
+					</el-tooltip>
+					<el-tooltip :content="$t('message.list.delete')"  placement="top">
+						<el-button icon="ele-Delete" size="small" text type="danger" @@click="handleDelete(row)" v-auth="'@(@Model.LowerClassName)/delete'" />
+					</el-tooltip>
+				</template>
+			</vxe-grid>
+		</el-card>
+		@if(@Model.PrintType != "off"){
+		@:<PrintDialog ref="printDialogRef" :title="state.title" @@reloadTable="handleQuery" />
+		}
+		<EditDialog ref="editDialogRef" :title="state.title" @@reloadTable="handleQuery" />
+</template>
+
+<script lang="ts" setup name="@(@Model.LowerClassName)">
+import { onMounted, reactive, ref } from 'vue';
+import { ElMessageBox, ElMessage } from "element-plus";
+import { useUserInfo } from '/@@/stores/userInfo';
+import { VxeGridInstance, VxeGridListeners, VxeGridPropTypes } from 'vxe-table';
+import { useVxeTable } from '/@@/hooks/useVxeTableOptionsHook';
+import { Local } from '/@@/utils/storage';
+import EditDialog from '/@@/views/@(@Model.PagePath)/@(@Model.LowerClassName)/component/edit.vue';
+import ModifyRecord from '/@@/components/table/modifyRecord.vue';
+import { useI18n } from 'vue-i18n';
+
+@if(@Model.TableField.Any(x=>x.EffectType == "DatePicker")){
+@://日期控件
+@:import { formatDate } from '/@@/utils/formatTime';
+}
+@if(@Model.PrintType != "off"){
+@:// 推荐设置操作 width 为 200
+@:import { hiprint } from 'vue-plugin-hiprint';
+@:import { SysPrintApi } from '/@@/api-services/api';
+@:import { SysPrint } from '/@@/api-services/models';
+@:import PrintDialog from '/@@/views/system/print/component/hiprint/preview.vue';
+}
+@if (@Model.IsApiService) {
+@:// 接口函数
+@:import { getAPI } from '/@@/utils/axios-utils';
+@:import { @(@Model.ClassName)Api } from '/@@/api-services/api';
+@:import { @(@Model.ClassName), @(@Model.ClassName)Input, @(@Model.ClassName)Output } from '/@@/api-services/models';
+} else {
+@://HJ: 废弃,没有使用和适配
+@:import { treelist@(@Model.ClassName), delete@(@Model.ClassName) } from '/@@/api/@(@Model.PagePath)/@(@Model.LowerClassName)';
+@:import { @(@Model.ClassName) } from '/@@/api/models/@(@Model.LowerClassName)';
+foreach (var column in Model.QueryWhetherList){
+	if(@column.EffectType == "ForeignKey"){
+@:import { get@(@column.FkEntityName)@(@column.PropertyName)Dropdown } from '/@@/api/@(@Model.PagePath)/@(@Model.LowerClassName)';
+	}
+	if(@column.EffectType == "ApiTreeSelector"){
+@:import { get@(@column.FkEntityName)Tree } from '/@@/api/@(@Model.PagePath)/@(@Model.LowerClassName)';
+	}
+}
+}
+// 子窗口对象
+const { t } = useI18n();
+const xGrid = ref<VxeGridInstance>();
+const editDialogRef = ref<InstanceType<typeof EditDialog>>();
+const userStore = useUserInfo();
+@if(@Model.PrintType != "off") {
+@:const printDialogRef = ref<InstanceType<typeof PrintDialog>>();
+}
+@if(@Model.TableField.Any(x=>x.EffectType == "ConstSelector")){
+@:const codeToName = userStore.codeToName;
+}
+@if(@Model.TableField.Any(x=>x.EffectType == "DictSelector") || @Model.TableField.Any(x=>x.EffectType == "EnumSelector")){
+@:const dc = userStore.getDictItemByValue;
+@:const dv = userStore.getDictItemByLabel;
+@:const dl = userStore.getDictDataByCode;
+}
+
+// 变量初始化
+const state = reactive({
+	showAdvanceQueryUI: false,
+	treeData: [] as Array<@(@Model.ClassName)>, // 树所有数据
+	queryParams: {
+		searchKey: undefined,
+		@if(Model.QueryWhetherList.Count > 0) {
+			@foreach (var column in Model.QueryWhetherList) {
+		@:@(@column.LowerPropertyName): undefined,
+			}
+		}
+	},
+	localPageParam: {
+		pageSize: 50 as number,
+		defaultSort: { field: 'Id', order: 'asc', descStr: 'desc' },
+	},
+	visible: false,
+	title: '',
+	key:'',
+	val:null,
+});
+
+// 本地存储参数
+const localPageParamKey = 'localPageParam:@(@Model.LowerClassName)';
+
+// 改变高级查询的控件显示状态
+const changeAdvanceQueryUI = () => {
+	state.showAdvanceQueryUI = !state.showAdvanceQueryUI;
+};
+
+// 校验表格字段权限
+const checkTableColumnVisible = (tableColumnName: any) => {
+	return !userStore.userTableList.includes(tableColumnName);
+};
+
+// 表格参数配置
+@if (@Model.IsApiService) {
+@:const options = useVxeTable<@(@Model.ClassName)>(
+} else {
+@:const options = useVxeTable<@(@Model.ClassName)>(
+}
+	{
+		id: '@(@Model.ClassName)',
+		name: t('message.@Model.LowerClassName.@Model.LowerClassName'),
+		columns: [
+			{ type: 'seq', title: t('message.list.number'), width: 60, fixed: 'left' },
+			@foreach (var column in Model.TableField) {
+				var whethersortable =column.WhetherSortable == "Y" ? "sortable: true" : "sortable: false";
+				var treetable =((Model.TabType == "Tree"||Model.TabType == "OnlyTree")&&column.ColumnName==Model.TreeName) ? ", treeNode: true, align: 'left'" : "";
+				if(@column.WhetherTable == "Y") {
+					if(@column.EffectType == "Upload" || @column.EffectType == "ForeignKey" || @column.EffectType == "ApiTreeSelector" || @column.EffectType == "Switch" || @column.EffectType == "ConstSelector") {
+						if(@column.EffectType == "Upload") {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip', slots: { default: 'row_@column.LowerPropertyName' } @treetable, @whethersortable },
+						} else if(@column.EffectType == "ForeignKey") {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip', slots: { default: 'row_@column.LowerPropertyName' } @treetable, @whethersortable },
+						} else if(@column.EffectType == "ApiTreeSelector") {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip', slots: { default: 'row_@column.LowerPropertyName' } @treetable, @whethersortable },
+						} else if(@column.EffectType == "Switch") {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip', slots: { default: 'row_@column.LowerPropertyName' } @treetable, @whethersortable },
+						} else if(@column.EffectType == "ConstSelector") {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip', slots: { default: 'row_@column.LowerPropertyName' } @treetable, @whethersortable },
+						}
+					} else if(@column.EffectType == "DictSelector") {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip', slots: { default: 'row_@column.LowerPropertyName' } @treetable, @whethersortable },
+					} else if(@column.EffectType == "EnumSelector") {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip', slots: { default: 'row_@column.LowerPropertyName' } @treetable, @whethersortable },
+					} else if(@column.EffectType == "DatePicker") {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip', formatter: ({ cellValue }) => formatDate(new Date(cellValue), 'YYYY-mm-dd HH:MM:SS'), @whethersortable },
+					} else {
+			@:{ visible: checkTableColumnVisible('@(@Model.LowerClassName):@(@column.LowerPropertyName)'), field: '@column.LowerPropertyName', title: t('message.@Model.LowerClassName.@column.LowerPropertyName'), minWidth: 100, showOverflow: 'tooltip' @treetable, @whethersortable},
+					}
+				}
+			}
+			@if(@Model.TableField.Any(t => t.ColumnName == "CreateTime") && @Model.TableField.Any(t => t.ColumnName == "UpdateTime") && @Model.TableField.Any(t => t.ColumnName == "CreateUserId")){
+			@:{ field: 'record',title: t('message.list.record'), width: 100, showOverflow: 'tooltip', slots: { default: 'row_record' } },
+			}
+			{ field: 'buttons',title: t('message.list.action'), fixed: 'right', width: 180, showOverflow: true, slots: { default: 'row_buttons' } },
+		],
+	},
+	// vxeGrid配置参数(此处可覆写任何参数)，参考vxe-table官方文档
+	{
+	    stripe: false,
+		// 多选配置
+		checkboxConfig: { range: false },
+		// 代理配置//加载时不立刻获取
+		proxyConfig: { autoLoad: false, ajax: { query: () => handleQueryApi() } },
+		// 分页配置
+		pagerConfig: { enabled: false },
+		// 工具栏配置
+		toolbarConfig: { export: false },
+		// 树形配置
+		treeConfig: { expandAll: false },
+		// 设置列显隐
+		customConfig: {
+			visibleMethod({ column }) {
+			  return checkTableColumnVisible(`@Model.LowerClassName:${column.field}`);
+			},
+		},
+	}
+);
+
+// 页面初始化
+onMounted(() => {
+
+});
+
+// 查询api
+const handleQueryApi = async () => {
+	const params = Object.assign(state.queryParams);
+	@if (@Model.IsApiService) {
+	@:return getAPI(@(@Model.ClassName)Api).api@(@Model.ClassName)TreePost(params);
+	} else {
+	@:return treelist@(@Model.ClassName)(params);
+	}
+};
+
+// 查询操作
+const handleQuery = async (updateTree: boolean = false) => {
+	options.loading = true;
+	var res = await handleQueryApi();
+	xGrid.value?.loadData(res.data.result ?? []);
+	options.loading = false;
+	// 是否更新左侧树
+	if (updateTree == true) {
+		//HJ 暂无该功能 emits('list-reload');
+	}
+	// 若无选择节点并且查询条件为空时，更新编辑页面机构列表树
+	if (state.queryParams.id == 0 && state.queryParams.name == undefined && state.queryParams.code == undefined && state.queryParams.type == undefined && updateTree == false)
+		state.treeData = res.data.result ?? [];
+};
+
+// 列表点击事件
+const  listhandleQuery= async (qparams: any,key:string,val:any) => {
+	console.log('listhandleQuery--', JSON.stringify(qparams));
+	state.key=key;
+	state.val=val;
+	if(qparams) state.queryParams=qparams;
+	await handleQuery(true);
+};
+
+// 重置操作
+const resetQuery = async () => {
+	state.queryParams.searchKey = undefined;
+	@if(Model.QueryWhetherList.Count > 0) {
+		@foreach (var column in Model.QueryWhetherList) {
+	@:state.queryParams.@(@column.LowerPropertyName) = undefined;
+		}
+	}
+	await xGrid.value?.commitProxy('reload');
+};
+
+// 打开新增页面
+const handleAdd = () => {
+	state.title = t('message.list.add')+t('message.@Model.LowerClassName.@Model.LowerClassName')  ;
+	let data = {
+	[state.key]: state.val,
+	@foreach (var column in Model.TableField){
+		if(@column.WhetherAddUpdate == "Y"&&@column.DefaultValue!=null){
+			if(@column.NetType.StartsWith("int")||@column.NetType.StartsWith("decimal")){
+		@:@column.LowerPropertyName:@(string.IsNullOrEmpty(@column.DefaultValue)?0:@column.DefaultValue),
+			}
+			if(@column.NetType.StartsWith("string")){
+		@:@column.LowerPropertyName:'@(@column.DefaultValue)',
+			}
+		}
+	}
+	};
+	editDialogRef.value?.openDialog(data);
+};
+
+// 打开编辑页面
+const handleEdit = (row: any) => {
+	state.title = t('message.list.edit')+t('message.@Model.LowerClassName.@Model.LowerClassName')  ;
+	editDialogRef.value?.openDialog(row);
+};
+
+@if(@Model.PrintType != "off") {
+@:// 打开打印页面
+@:const handlePrint = async (row: any) => {
+	@:state.title = t('message.list.print')+t('message.@Model.LowerClassName.@Model.LowerClassName')  ;
+	@if(@Model.PrintType != "off"){
+	if (@Model.IsApiService) {
+	@:var res = await getAPI(SysPrintApi).apiSysPrintPrintNameGet('@Model.PrintName');
+	} else {
+	@:var res = await getPrint@(@Model.ClassName)(row);
+	}
+	@:var printTemplate = res.data.result as SysPrint;
+	@:var template = JSON.parse(printTemplate.template);
+	@:var width = template.panels[0].width;
+	@:row['barCode'] = row.code;
+	@:row['qrCode'] = row.code;
+	@:row["printDate"] = formatDate(new Date(), 'YYYY-mm-dd HH:MM');
+	@:printDialogRef.value.showDialog(new hiprint.PrintTemplate({template: template}), row, width);
+	}
+	@if(@Model.PrintType == "auto"){
+	@:printDialogRef.value.showDialog(row);
+	}
+@:};
+}
+
+// 删除
+const handleDelete = (row: any) => {
+	ElMessageBox.confirm(t('message.list.confirmDelete')+t('message.@Model.LowerClassName.@Model.LowerClassName')+`：【${row.id}】?`, t('message.list.tips'), {
+		confirmButtonText:  t('message.list.submit'),
+		cancelButtonText:  t('message.list.cancel'),
+		type: 'warning',
+	}).then(async () => {
+		@if (@Model.IsApiService) {
+		@:await getAPI(@(@Model.ClassName)Api).api@(@Model.ClassName)DeletePost({ id: row.id });
+		} else {
+		@:await delete@(@Model.ClassName)(row);
+		}
+		await handleQuery();
+		ElMessage.success(t('message.list.deleteSuccess'));
+	})
+	.catch(() => {});
+};
+
+// 表格事件
+@if (@Model.IsApiService) {
+@:const gridEvents: VxeGridListeners<@(@Model.ClassName)> = {
+} else {
+@:const gridEvents: VxeGridListeners = {
+}
+    //行单击事件
+    async cellClick({ row, column }) {
+		listClick(row,column);
+	},
+	// 只对 pager-config 配置时有效，分页发生改变时会触发该事件
+	async pageChange({ pageSize }) {
+		state.localPageParam.pageSize = pageSize;
+		Local.set(localPageParamKey, state.localPageParam);
+	},
+	// 当排序条件发生变化时会触发该事件
+	async sortChange({ field, order }) {
+		state.localPageParam.defaultSort = { field: field, order: order!, descStr: 'desc' };
+		Local.set(localPageParamKey, state.localPageParam);
+	},
+	async proxyQuery() {
+		state.treeData = xGrid.value?.getTableData().tableData ?? [];
+	},
+};
+
+@foreach (var column in Model.QueryWhetherList) {
+	@if(@column.EffectType == "ForeignKey") {
+@:const @LowerFirstLetter(@column.FkEntityName)@(@column.PropertyName)DropdownList = ref<any>([]); 
+@:const get@(@column.FkEntityName)@(@column.PropertyName)DropdownList = async () => {
+	@if (@Model.IsApiService) {
+	@:let list = await getAPI(@(@Model.ClassName)Api).api@(@Model.ClassName)@(@column.FkEntityName)@(@column.PropertyName)DropdownGet();
+	} else {
+	@:let list = await get@(@column.FkEntityName)@(@column.PropertyName)Dropdown();
+	}
+	@:@LowerFirstLetter(@column.FkEntityName)@(@column.PropertyName)DropdownList.value = list.data.result ?? [];
+@:};
+@:get@(@column.FkEntityName)@(@column.PropertyName)DropdownList();
+	}
+}
+
+@foreach (var column in Model.QueryWhetherList) {
+	@if(@column.EffectType == "ApiTreeSelector") {
+@:const @LowerFirstLetter(@column.FkEntityName)TreeData = ref<any>([]); 
+@:const get@(@column.FkEntityName)TreeData = async () => {
+	@if (@Model.IsApiService) {
+	@:let list = await getAPI(@(@Model.ClassName)Api).api@(@Model.ClassName)@(@column.FkEntityName)Tree();
+	} else {
+	@:let list = await get@(@column.FkEntityName)Tree();
+	}
+	@:@LowerFirstLetter(@column.FkEntityName)TreeData.value = list.data.result ?? [];
+@:};
+@:get@(@column.FkEntityName)TreeData();
+	}
+}
+
+// 全部展开
+const handleExpand = () => {
+	xGrid.value?.setAllTreeExpand(true);
+};
+
+// 全部折叠
+const handleFold = () => {
+	xGrid.value?.clearTreeExpand();
+};
+
+// 与父组件的交互逻辑
+const emits = defineEmits(['list-click']);
+const listClick = (row: any,column:any) => {
+	emits('list-click', row,column);
+};
+
+// 将属性或者函数暴露给父组件
+defineExpose({ listhandleQuery });
+</script>

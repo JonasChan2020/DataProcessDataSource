@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DataProcess.DataSource.Core</name>
+    </assembly>
+    <members>
+        <member name="T:DataProcess.DataSource.Core.OwnerOrgAttribute">
+            <summary>
+            所属机构数据权限
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.OwnerUserAttribute">
+            <summary>
+            所属用户数据权限
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.DbContext">
+            <summary>
+            数据库上下文对象
+            </summary>
+        </member>
+        <member name="F:DataProcess.DataSource.Core.DbContext.Instance">
+            <summary>
+            SqlSugar 数据库实例
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.EntityBaseId">
+            <summary>
+            框架实体基类Id
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityBaseId.Id">
+            <summary>
+            雪花Id
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.EntityBase">
+            <summary>
+            框架实体基类
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityBase.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityBase.UpdateTime">
+            <summary>
+            更新时间
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityBase.CreateUserId">
+            <summary>
+            创建者Id
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityBase.CreateUserName">
+            <summary>
+            创建者姓名
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityBase.UpdateUserId">
+            <summary>
+            修改者Id
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityBase.UpdateUserName">
+            <summary>
+            修改者姓名
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityBase.IsDelete">
+            <summary>
+            软删除
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.EntityTenant">
+            <summary>
+            租户实体基类
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityTenant.TenantId">
+            <summary>
+            租户Id
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.EntityTenantId">
+            <summary>
+            租户实体基类Id
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.EntityTenantId.TenantId">
+            <summary>
+            租户Id
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.IDeletedFilter">
+            <summary>
+            假删除接口过滤器
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.IDeletedFilter.IsDelete">
+            <summary>
+            软删除
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.ITenantIdFilter">
+            <summary>
+            租户Id接口过滤器
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.ITenantIdFilter.TenantId">
+            <summary>
+            租户Id
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.IOrgIdFilter">
+            <summary>
+            机构Id接口过滤器
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.IOrgIdFilter.CreateOrgId">
+            <summary>
+            创建者部门Id
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Plugin.IDataSourcePlugin">
+            <summary>
+            数据源插件适配器接口
+            </summary>
+        </member>
+    </members>
+</doc>
