@@ -170,5 +170,5 @@ public class DataSourceResult
 public class SqlSugarConnectionConfig
 {
     public string ConnectionString { get; set; } = string.Empty;
-    public DbType DbType { get; set; }
+    public SqlSugar.DbType DbType { get; set; }
 }

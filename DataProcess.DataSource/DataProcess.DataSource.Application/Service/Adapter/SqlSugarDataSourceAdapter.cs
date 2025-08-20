@@ -1,12 +1,13 @@
+using Furion;
 using SqlSugar;
 using DataProcess.DataSource.Core.Plugin;
 using DataProcess.DataSource.Core.Models;
 using System.Data;
 using System.Text;
-using Furion.Json;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using DbType = SqlSugar.DbType;
 
 namespace DataProcess.DataSource.Application.Service.Adapter;
 
@@ -151,14 +152,26 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
         if (config == null) throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
             IsAutoCloseConnection = true
         });
 
-        return await db.DbMaintenance.CreateDatabaseAsync(databaseName);
+        string sql = config.DbType switch
+        {
+            DbType.SqlServer => $"IF DB_ID(N'{EscapeLiteral(databaseName)}') IS NULL CREATE DATABASE [{EscapeIdentifier(databaseName)}];",
+            DbType.MySql or DbType.MySqlConnector => $"CREATE DATABASE IF NOT EXISTS `{EscapeIdentifier(databaseName)}`;",
+            DbType.PostgreSQL => $"DO $$ BEGIN IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '{EscapeLiteral(databaseName)}') THEN EXECUTE 'CREATE DATABASE \"{EscapeIdentifier(databaseName)}\"'; END IF; END $$;",
+            DbType.Sqlite => throw new NotSupportedException("SQLite 无需单独建库，请直接使用数据库文件连接。"),
+            DbType.Oracle  => throw new NotSupportedException("Oracle 建库需 DBA 权限，请使用外部工具创建后再配置连接。"),
+            _ => throw new NotSupportedException($"暂不支持 {config.DbType} 的自动建库。")
+        };
+
+        if (string.IsNullOrWhiteSpace(sql)) return false;
+        await db.Ado.ExecuteCommandAsync(sql);
+        return true;
     }
 
     public async Task<bool> DropDatabaseAsync(string configJson, string databaseName)
@@ -245,14 +258,40 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
         if (config == null) throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
             IsAutoCloseConnection = true
         });
 
-        return await db.DbMaintenance.DropTableAsync(tableName);
+        try
+        {
+            // 优先使用同步 API
+            var ok = db.DbMaintenance.DropTable(tableName);
+            return await Task.FromResult(ok);
+        }
+        catch
+        {
+            // 回退原生 SQL
+            var sql = config.DbType switch
+            {
+                DbType.SqlServer => $"IF OBJECT_ID(N'{EscapeLiteral(tableName)}', N'U') IS NOT NULL DROP TABLE [{EscapeIdentifier(tableName)}];",
+                DbType.MySql or DbType.MySqlConnector => $"DROP TABLE IF EXISTS `{EscapeIdentifier(tableName)}`;",
+                DbType.PostgreSQL => $"DROP TABLE IF EXISTS \"{EscapeIdentifier(tableName)}\";",
+                _ => $"DROP TABLE {tableName}"
+            };
+
+            try
+            {
+                await db.Ado.ExecuteCommandAsync(sql);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 
     public async Task<DataSourceTableSchema> GetTableSchemaAsync(string configJson, string tableName)
@@ -414,4 +453,10 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         }
         return await deleteable.ExecuteCommandAsync();
     }
+
+    private static string EscapeIdentifier(string name)
+        => name.Replace("]", "]]").Replace("\"", "\"\"").Replace("`", "``");
+
+    private static string EscapeLiteral(string value)
+        => value.Replace("'", "''");
 }

@@ -49,51 +49,6 @@
             更新时间
             </summary>
         </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.CreateUserId">
-            <summary>
-            创建者Id
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.CreateUserName">
-            <summary>
-            创建者姓名
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.UpdateUserId">
-            <summary>
-            修改者Id
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.UpdateUserName">
-            <summary>
-            修改者姓名
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.IsDelete">
-            <summary>
-            软删除
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Core.EntityTenant">
-            <summary>
-            租户实体基类
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityTenant.TenantId">
-            <summary>
-            租户Id
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Core.EntityTenantId">
-            <summary>
-            租户实体基类Id
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityTenantId.TenantId">
-            <summary>
-            租户Id
-            </summary>
-        </member>
         <member name="T:DataProcess.DataSource.Core.IDeletedFilter">
             <summary>
             假删除接口过滤器
@@ -122,6 +77,146 @@
         <member name="P:DataProcess.DataSource.Core.IOrgIdFilter.CreateOrgId">
             <summary>
             创建者部门Id
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceSchema">
+            <summary>
+            数据源Schema
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceDatabase">
+            <summary>
+            数据库信息
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceTable">
+            <summary>
+            数据表信息
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceColumn">
+            <summary>
+            数据列信息
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceTableSchema">
+            <summary>
+            表结构定义
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceIndex">
+            <summary>
+            索引信息
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceQuery">
+            <summary>
+            DSL查询对象
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceWhere">
+            <summary>
+            条件对象
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceCondition">
+            <summary>
+            单个条件
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceJoin">
+            <summary>
+            连接查询
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceOrderBy">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceGroupBy">
+            <summary>
+            分组
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceHaving">
+            <summary>
+            Having条件
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceWrite">
+            <summary>
+            写入数据对象
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceResult">
+            <summary>
+            查询结果
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.SqlSugarConnectionConfig">
+            <summary>
+            SqlSugar连接配置
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter">
+            <summary>
+            数据源适配器接口
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.TestConnectionAsync(System.String)">
+            <summary>
+            测试连接
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.GetSchemaAsync(System.String)">
+            <summary>
+            获取数据库Schema
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.QueryAsync(System.String,DataProcess.DataSource.Core.Models.DataSourceQuery)">
+            <summary>
+            执行DSL查询
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.WriteAsync(System.String,DataProcess.DataSource.Core.Models.DataSourceWrite)">
+            <summary>
+            执行DSL写入
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.CreateDatabaseAsync(System.String,System.String)">
+            <summary>
+            创建数据库
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.DropDatabaseAsync(System.String,System.String)">
+            <summary>
+            删除数据库
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.GetDatabaseListAsync(System.String)">
+            <summary>
+            获取数据库列表
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.GetTableListAsync(System.String)">
+            <summary>
+            获取表列表
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.CreateTableAsync(System.String,DataProcess.DataSource.Core.Models.DataSourceTableSchema)">
+            <summary>
+            创建表
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.DropTableAsync(System.String,System.String)">
+            <summary>
+            删除表
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.GetTableSchemaAsync(System.String,System.String)">
+            <summary>
+            获取表结构
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Core.Plugin.IDataSourcePlugin">

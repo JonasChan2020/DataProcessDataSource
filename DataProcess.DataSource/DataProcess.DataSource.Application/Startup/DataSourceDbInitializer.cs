@@ -1,5 +1,8 @@
-using DataProcess.DataSource.Core.Entity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
+using DataProcess.DataSource.Application.Entity;
 
 namespace DataProcess.DataSource.Application.Startup;
 
@@ -45,7 +48,6 @@ public class DataSourceDbInitializer : IStartupFilter
                     Icon = "",
                     IsBuiltIn = true
                 }
-                // 可继续扩展其它内置类型
             };
 
             foreach (var t in builtInTypes)
