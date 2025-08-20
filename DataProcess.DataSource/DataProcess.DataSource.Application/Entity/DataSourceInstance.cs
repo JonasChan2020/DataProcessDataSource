@@ -15,13 +15,28 @@ public class DataSourceInstance : EntityBase
     [SugarColumn(Length = 128, IsNullable = false, ColumnDescription = "实例名称")]
     public string Name { get; set; } = default!;
 
-    /// <summary>关联的数据源类型编码（如：SqlServer、MySql）</summary>
-    [SugarColumn(Length = 64, IsNullable = false, ColumnDescription = "类型编码")]
-    public string TypeCode { get; set; } = default!;
+    // 兼容：服务存在按类型Id或编码两种关联方式
+    [SugarColumn(IsNullable = true, ColumnDescription = "类型Id")]
+    public long? TypeId { get; set; }
 
-    /// <summary>连接参数（JSON）</summary>
+    [SugarColumn(Length = 64, IsNullable = true, ColumnDescription = "类型编码")]
+    public string? TypeCode { get; set; }
+
+    // 父子实例继承
+    [SugarColumn(IsNullable = true, ColumnDescription = "父实例Id")]
+    public long? ParentId { get; set; }
+
+    // 子实例覆盖配置（JSON）
+    [SugarColumn(ColumnDataType = "text", IsNullable = true, ColumnDescription = "覆盖配置（JSON）")]
+    public string? OverrideJson { get; set; }
+
+    // 连接参数（JSON）
     [SugarColumn(ColumnDataType = "text", IsNullable = true, ColumnDescription = "连接参数（JSON）")]
     public string? Parameters { get; set; }
+
+    // 兼容历史字段名：ConfigJson
+    [SugarColumn(ColumnDataType = "text", IsNullable = true, ColumnDescription = "连接参数（JSON，兼容字段）")]
+    public string? ConfigJson { get; set; }
 
     [SugarColumn(IsNullable = false, ColumnDescription = "是否启用")]
     public bool Enabled { get; set; } = true;

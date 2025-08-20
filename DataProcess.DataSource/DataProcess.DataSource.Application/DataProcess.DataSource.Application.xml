@@ -21,12 +21,12 @@
         </member>
         <member name="T:DataProcess.DataSource.Application.Entity.DataSourceInstance">
             <summary>
-            数据源实例表
+            数据源实例（具体连接配置）
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Entity.DataSourceType">
             <summary>
-            数据源类型表（内置/插件）
+            数据源类型（业务实体，支持插件）
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Entity.TestLog">
@@ -39,6 +39,78 @@
             主库测试表
             </summary>
         </member>
+        <member name="T:DataProcess.DataSource.Application.SeedData.Abstractions.IgnoreUpdateSeedAttribute">
+            <summary>
+            忽略更新种子特性（标记在种子类，表示只插入不更新）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.SeedData.Abstractions.IgnoreUpdateSeedColumnAttribute">
+            <summary>
+            忽略更新的列（标记在实体属性上，更新时跳过这些列）
+            目前未在本模块使用，预留对齐 Admin.NET 的能力
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.SeedData.Abstractions.ISqlSugarEntitySeedData`1">
+            <summary>
+            实体种子数据接口（模块内自给）
+            </summary>
+            <typeparam name="TEntity"></typeparam>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.SeedData.DataSourceTypeSeedData">
+            <summary>
+            数据源类型种子数据（对齐 Admin.NET Seed 风格，模块内自给）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.SeedData.SeedRunner">
+            <summary>
+            模块级种子执行器（对齐 Admin.NET 思路，但不依赖其程序集）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Adapter.SqlSugarDataSourceAdapter">
+            <summary>
+            SqlSugar数据源适配器（用于内置数据库类型）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceDatabaseService">
+            <summary>
+            数据库操作服务
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.GetDatabaseList(System.Int64)">
+            <summary>
+            获取数据库列表
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.CreateDatabase(System.Int64,System.String)">
+            <summary>
+            创建数据库
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.DropDatabase(System.Int64,System.String)">
+            <summary>
+            删除数据库
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.GetTableList(System.Int64)">
+            <summary>
+            获取表列表
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.CreateTable(System.Int64,DataProcess.DataSource.Core.Models.DataSourceTableSchema)">
+            <summary>
+            创建表
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.DropTable(System.Int64,System.String)">
+            <summary>
+            删除表
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.GetTableSchema(System.Int64,System.String)">
+            <summary>
+            获取表结构
+            </summary>
+        </member>
         <member name="T:DataProcess.DataSource.Application.Service.DataSourceDslService">
             <summary>
             DSL 查询服务
@@ -47,6 +119,36 @@
         <member name="M:DataProcess.DataSource.Application.Service.DataSourceDslService.Query(DataProcess.DataSource.Application.Dto.DslQueryDto)">
             <summary>
             统一DSL查询（带结构校验和插件沙箱）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceInstanceService">
+            <summary>
+            数据源实例服务
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Add(DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto)">
+            <summary>
+            新增数据源实例
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Update(DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto)">
+            <summary>
+            编辑数据源实例
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Delete(System.Int64)">
+            <summary>
+            删除数据源实例
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.GetListAsync">
+            <summary>
+            获取所有数据源实例
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.TestConnection(System.Int64)">
+            <summary>
+            测试连接
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Service.DataSourceMultiDbService">
@@ -59,14 +161,215 @@
             跨库事务示例（mainDb 和 logDb）
             </summary>
         </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceQueryService">
+            <summary>
+            数据查询服务
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceQueryService.Query(System.Int64,DataProcess.DataSource.Core.Models.DataSourceQuery)">
+            <summary>
+            统一DSL查询
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceQueryService.Write(System.Int64,DataProcess.DataSource.Core.Models.DataSourceWrite)">
+            <summary>
+            统一DSL写入
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceQueryService.GetSchema(System.Int64)">
+            <summary>
+            获取Schema
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceQueryService.BatchQuery(System.Collections.Generic.List{DataProcess.DataSource.Application.Service.BatchQueryInput})">
+            <summary>
+            批量查询（多数据源并发）
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.BatchQueryInput">
+            <summary>
+            批量查询输入
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceSeedDataService">
+            <summary>
+            数据源种子数据服务
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceSeedDataService.InitBuiltInTypes">
+            <summary>
+            初始化SqlSugar支持的所有数据源类型
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceSeedDataService.GetBuiltInTypeCodes">
+            <summary>
+            获取内置类型列表
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceService">
+            <summary>
+            数据源服务（动态 API）
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceService.Types">
+            <summary>
+            获取数据源类型列表（若数据库不可用则返回内置默认值）
+            GET /api/datasource/types
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceTypeService">
+            <summary>
+            数据源类型服务
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Page(DataProcess.DataSource.Application.Service.Dto.DataSourceTypePageInput)">
+            <summary>
+            分页查询数据源类型
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.GetListAsync">
+            <summary>
+            获取所有数据源类型
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Add(DataProcess.DataSource.Application.Service.Dto.DataSourceTypeInput)">
+            <summary>
+            新增数据源类型
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Update(DataProcess.DataSource.Application.Service.Dto.DataSourceTypeUpdateInput)">
+            <summary>
+            更新数据源类型
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Delete(DataProcess.DataSource.Core.BaseIdInput)">
+            <summary>
+            删除数据源类型
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.GetDetail(System.Int64)">
+            <summary>
+            获取数据源类型详情
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.UploadPlugin(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            上传插件（ZIP）
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.UninstallPlugin(System.String)">
+            <summary>
+            卸载插件
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Import(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            导入数据源类型
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Export">
+            <summary>
+            导出数据源类型
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto">
+            <summary>
+            数据源实例输出
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceInput">
+            <summary>
+            数据源实例输入
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstancePageInput">
+            <summary>
+            数据源实例分页查询
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceUpdateInput">
+            <summary>
+            数据源实例更新输入
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.TestConnectionInput">
+            <summary>
+            连接测试输入
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.TestConnectionResult">
+            <summary>
+            连接测试结果
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypeDto">
+            <summary>
+            数据源类型输出
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypeInput">
+            <summary>
+            数据源类型输入
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypePageInput">
+            <summary>
+            数据源类型分页查询
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypeUpdateInput">
+            <summary>
+            数据源类型更新输入
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Plugin.DataSourcePluginWatcherHostedService">
+            <summary>
+            插件目录扫描与热加载：启动扫描 + 文件变更监听（简化版）
+            </summary>
+        </member>
         <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginManager">
             <summary>
-            插件管理器（支持热插拔）
+            插件管理器
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.GetAdapter(System.String,System.String)">
+            <summary>
+            获取适配器实例
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.GetAssembly(System.String)">
+            <summary>
+            获取程序集
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.UnloadPlugin(System.String)">
+            <summary>
+            卸载插件
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.InstallPluginAsync(System.IO.Stream,System.String)">
+            <summary>
+            安装插件
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.GetPluginInfoAsync(System.String)">
+            <summary>
+            获取插件信息
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginInfo">
+            <summary>
+            插件信息
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginSandboxManager">
             <summary>
             插件沙箱隔离加载器
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Startup.DataSourceDbInitializer">
+            <summary>
+            数据源模块数据库初始化（延迟执行，带重试，应用启动后运行）
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.SystemAppService">

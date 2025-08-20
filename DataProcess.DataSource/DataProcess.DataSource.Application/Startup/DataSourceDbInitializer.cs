@@ -1,64 +1,87 @@
+using Furion;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
 using DataProcess.DataSource.Application.Entity;
+using DbType = SqlSugar.DbType;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using SqlSugar;
+using DataProcess.DataSource.Application.Entity;
+using DataProcess.DataSource.Application.SeedData;
+using System.Threading; // 为 WaitHandle 引用
 
 namespace DataProcess.DataSource.Application.Startup;
 
 /// <summary>
-/// 数据源模块数据库初始化
+/// 数据源模块数据库初始化（延迟执行，带重试，应用启动后运行）
 /// </summary>
-public class DataSourceDbInitializer : IStartupFilter
+public class DataSourceDbInitializer : BackgroundService
 {
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    private readonly IServiceProvider _services;
+    private readonly ILogger<DataSourceDbInitializer> _logger;
+    private readonly IHostApplicationLifetime _appLifetime;
+
+    public DataSourceDbInitializer(
+        IServiceProvider services,
+        ILogger<DataSourceDbInitializer> logger,
+        IHostApplicationLifetime appLifetime)
     {
-        return app =>
+        _services = services;
+        _logger = logger;
+        _appLifetime = appLifetime;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await Task.Yield();
+
+        // 等待应用启动或被取消（修复 CS1503）
+        await Task.Run(() =>
         {
-            using var scope = app.ApplicationServices.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<ISqlSugarClient>();
-
-            // 自动建表
-            db.CodeFirst.InitTables<DataSourceType, DataSourceInstance>();
-
-            // 注入内置类型（如未存在）
-            var builtInTypes = new[]
+            WaitHandle.WaitAny(new[]
             {
-                new DataSourceType
-                {
-                    Code = "SqlServer",
-                    Name = "SqlServer",
-                    Description = "内置SqlServer数据源",
-                    Version = "1.0",
-                    AdapterClassName = "DataProcess.DataSource.Adapter.SqlServer.SqlServerAdapter",
-                    AssemblyName = "DataProcess.DataSource.Adapter.SqlServer",
-                    ParamTemplate = "{\"Server\":\"\",\"Database\":\"\",\"UserId\":\"\",\"Password\":\"\"}",
-                    Icon = "",
-                    IsBuiltIn = true
-                },
-                new DataSourceType
-                {
-                    Code = "MySql",
-                    Name = "MySQL",
-                    Description = "内置MySQL数据源",
-                    Version = "1.0",
-                    AdapterClassName = "DataProcess.DataSource.Adapter.MySql.MySqlAdapter",
-                    AssemblyName = "DataProcess.DataSource.Adapter.MySql",
-                    ParamTemplate = "{\"Server\":\"\",\"Database\":\"\",\"UserId\":\"\",\"Password\":\"\"}",
-                    Icon = "",
-                    IsBuiltIn = true
-                }
-            };
+                _appLifetime.ApplicationStarted.WaitHandle,
+                stoppingToken.WaitHandle
+            });
+        }, stoppingToken);
 
-            foreach (var t in builtInTypes)
+        const int maxRetry = 20;
+        const int delayMs = 1500;
+
+        for (var attempt = 1; attempt <= maxRetry && !stoppingToken.IsCancellationRequested; attempt++)
+        {
+            try
             {
-                if (!db.Queryable<DataSourceType>().Any(x => x.Code == t.Code))
+                using var scope = _services.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<ISqlSugarClient>();
+
+                var cfg = db.CurrentConnectionConfig
+                           ?? throw new InvalidOperationException("SqlSugar 的 CurrentConnectionConfig 为空，请确认 AddSqlSugar 配置已正确加载。");
+                if (string.IsNullOrWhiteSpace(cfg.ConnectionString))
+                    throw new InvalidOperationException("数据库连接字符串为空，请检查配置文件或环境变量。");
+
+                db.DbMaintenance.CreateDatabase();
+                try { db.Ado.Open(); } finally { db.Ado.Close(); }
+
+                db.CodeFirst.InitTables(typeof(DataSourceType), typeof(DataSourceInstance));
+                SeedRunner.Execute(db);
+
+                _logger.LogInformation("[DataSource] 初始化完成（第 {Attempt}/{Max} 次）。", attempt, maxRetry);
+                break;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "[DataSource] 第 {Attempt}/{Max} 次初始化失败，将在 {Delay}ms 后重试。", attempt, maxRetry, delayMs);
+                if (attempt == maxRetry)
+                    _logger.LogError(ex, "[DataSource] 达到最大重试次数，已跳过初始化。");
+                else
                 {
-                    db.Insertable(t).ExecuteCommand();
+                    try { await Task.Delay(delayMs, stoppingToken); } catch { /* ignore */ }
                 }
             }
-
-            next(app);
-        };
+        }
     }
 }

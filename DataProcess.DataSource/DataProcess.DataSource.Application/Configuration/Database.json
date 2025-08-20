@@ -8,23 +8,23 @@
     "ConnectionConfigs": [
       {
         "ConfigId": "MainDb",
-        "DbType": "SqlServer",
-        "ConnectionString": "Server=.;Database=DataSourceDb;Trusted_Connection=True;TrustServerCertificate=True;",
+        "DbType": "MySql",
+        "ConnectionString": "Server=www.wsnowtech.cn;port=23306;Database=testdb;Uid=root;Pwd=hxmysql;SslMode=None;AllowLoadLocalInfile=true;AllowUserVariables=true;",
         "IsAutoCloseConnection": true,
         "DbSettings": {
-          "EnableInitDb": false, // 启用库初始化（若实体没有变化建议关闭）
+          "EnableInitDb": true, // 启用库初始化（若实体没有变化建议关闭）
           "EnableInitView": false, // 启用视图初始化（若实体和视图没有变化建议关闭）
           "EnableDiffLog": false, // 启用库表差异日志
           "EnableUnderLine": false, // 启用驼峰转下划线
           "EnableConnEncrypt": false // 启用数据库连接串加密（国密SM2加解密）
         },
         "TableSettings": {
-          "EnableInitTable": false, // 启用表初始化（若实体没有变化建议关闭）
-          "EnableIncreTable": false // 启用表增量更新（只更新贴了特性[IncreTable]的实体表）
+          "EnableInitTable": true, // 启用表初始化（若实体没有变化建议关闭）
+          "EnableIncreTable": true // 启用表增量更新（只更新贴了特性[IncreTable]的实体表）
         },
         "SeedSettings": {
-          "EnableInitSeed": false, // 启用种子初始化（若种子没有变化建议关闭）
-          "EnableIncreSeed": false // 启用种子增量更新（只更新贴了特性[IncreSeed]的种子表）
+          "EnableInitSeed": true, // 启用种子初始化（若种子没有变化建议关闭）
+          "EnableIncreSeed": true // 启用种子增量更新（只更新贴了特性[IncreSeed]的种子表）
         }
       }
       //// 日志独立数据库配置

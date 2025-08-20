@@ -23,7 +23,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
             var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
             if (config == null) return false;
 
-            var db = new SqlSugarClient(new ConnectionConfig
+            using var db = new SqlSugarClient(new ConnectionConfig
             {
                 ConnectionString = config.ConnectionString,
                 DbType = config.DbType,
@@ -41,10 +41,9 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
     public async Task<DataSourceSchema> GetSchemaAsync(string configJson)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
@@ -94,18 +93,17 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
     public async Task<DataSourceResult> QueryAsync(string configJson, DataSourceQuery query)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
             IsAutoCloseConnection = true
         });
 
-        var sql = BuildSqlFromQuery(query);
-        var dataTable = await db.Ado.GetDataTableAsync(sql);
+        var (sql, parameters) = BuildSqlFromQuery(query);
+        var dataTable = await db.Ado.GetDataTableAsync(sql, parameters?.ToArray());
 
         var result = new DataSourceResult
         {
@@ -115,10 +113,10 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
         foreach (DataRow row in dataTable.Rows)
         {
-            var dict = new Dictionary<string, object>();
+            var dict = new Dictionary<string, object?>();
             foreach (var column in result.Columns)
             {
-                dict[column] = row[column] == DBNull.Value ? null! : row[column];
+                dict[column] = row[column] == DBNull.Value ? null : row[column];
             }
             result.Data.Add(dict);
         }
@@ -128,10 +126,9 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
     public async Task<int> WriteAsync(string configJson, DataSourceWrite write)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
@@ -149,8 +146,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
     public async Task<bool> CreateDatabaseAsync(string configJson, string databaseName)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
         using var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -165,53 +161,65 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
             DbType.MySql or DbType.MySqlConnector => $"CREATE DATABASE IF NOT EXISTS `{EscapeIdentifier(databaseName)}`;",
             DbType.PostgreSQL => $"DO $$ BEGIN IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '{EscapeLiteral(databaseName)}') THEN EXECUTE 'CREATE DATABASE \"{EscapeIdentifier(databaseName)}\"'; END IF; END $$;",
             DbType.Sqlite => throw new NotSupportedException("SQLite 无需单独建库，请直接使用数据库文件连接。"),
-            DbType.Oracle  => throw new NotSupportedException("Oracle 建库需 DBA 权限，请使用外部工具创建后再配置连接。"),
+            DbType.Oracle => throw new NotSupportedException("Oracle 建库需 DBA 权限，请使用外部工具创建后再配置连接。"),
             _ => throw new NotSupportedException($"暂不支持 {config.DbType} 的自动建库。")
         };
 
-        if (string.IsNullOrWhiteSpace(sql)) return false;
         await db.Ado.ExecuteCommandAsync(sql);
         return true;
     }
 
     public async Task<bool> DropDatabaseAsync(string configJson, string databaseName)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
             IsAutoCloseConnection = true
         });
 
-        await db.Ado.ExecuteCommandAsync($"DROP DATABASE IF EXISTS {databaseName}");
+        string sql = config.DbType switch
+        {
+            DbType.SqlServer => $"IF DB_ID(N'{EscapeLiteral(databaseName)}') IS NOT NULL DROP DATABASE [{EscapeIdentifier(databaseName)}];",
+            DbType.MySql or DbType.MySqlConnector => $"DROP DATABASE IF EXISTS `{EscapeIdentifier(databaseName)}`;",
+            DbType.PostgreSQL => $"DROP DATABASE IF EXISTS \"{EscapeIdentifier(databaseName)}\";",
+            _ => throw new NotSupportedException($"暂不支持 {config.DbType} 的自动删库。")
+        };
+
+        await db.Ado.ExecuteCommandAsync(sql);
         return true;
     }
 
     public async Task<List<string>> GetDatabaseListAsync(string configJson)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
             IsAutoCloseConnection = true
         });
 
-        var dataTable = await db.Ado.GetDataTableAsync("SHOW DATABASES");
-        return dataTable.Rows.Cast<DataRow>().Select(row => row[0]?.ToString() ?? "").ToList();
+        string sql = config.DbType switch
+        {
+            DbType.SqlServer => "SELECT name FROM sys.databases ORDER BY name",
+            DbType.MySql or DbType.MySqlConnector => "SHOW DATABASES",
+            DbType.PostgreSQL => "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname",
+            _ => throw new NotSupportedException($"暂不支持 {config.DbType} 的数据库列表查询")
+        };
+
+        var table = await db.Ado.GetDataTableAsync(sql);
+        return table.Rows.Cast<DataRow>().Select(r => r[0]?.ToString() ?? "").Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
     }
 
     public async Task<List<DataSourceTable>> GetTableListAsync(string configJson)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
@@ -228,10 +236,9 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
     public async Task<bool> CreateTableAsync(string configJson, DataSourceTableSchema tableSchema)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
@@ -255,8 +262,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
     public async Task<bool> DropTableAsync(string configJson, string tableName)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
         using var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -267,13 +273,11 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
         try
         {
-            // 优先使用同步 API
             var ok = db.DbMaintenance.DropTable(tableName);
             return await Task.FromResult(ok);
         }
         catch
         {
-            // 回退原生 SQL
             var sql = config.DbType switch
             {
                 DbType.SqlServer => $"IF OBJECT_ID(N'{EscapeLiteral(tableName)}', N'U') IS NOT NULL DROP TABLE [{EscapeIdentifier(tableName)}];",
@@ -281,25 +285,16 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
                 DbType.PostgreSQL => $"DROP TABLE IF EXISTS \"{EscapeIdentifier(tableName)}\";",
                 _ => $"DROP TABLE {tableName}"
             };
-
-            try
-            {
-                await db.Ado.ExecuteCommandAsync(sql);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            await db.Ado.ExecuteCommandAsync(sql);
+            return true;
         }
     }
 
     public async Task<DataSourceTableSchema> GetTableSchemaAsync(string configJson, string tableName)
     {
-        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("配置格式错误");
+        var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson) ?? throw new Exception("配置格式错误");
 
-        var db = new SqlSugarClient(new ConnectionConfig
+        using var db = new SqlSugarClient(new ConnectionConfig
         {
             ConnectionString = config.ConnectionString,
             DbType = config.DbType,
@@ -331,19 +326,17 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         return schema;
     }
 
-    private string BuildSqlFromQuery(DataSourceQuery query)
+    private (string Sql, List<SugarParameter> Params) BuildSqlFromQuery(DataSourceQuery query)
     {
         var sql = new StringBuilder();
+        var parameters = new List<SugarParameter>();
+        var pIndex = 0;
 
         // SELECT
-        if (query.Select.Any())
-        {
+        if (query.Select != null && query.Select.Any())
             sql.Append($"SELECT {string.Join(", ", query.Select)} ");
-        }
         else
-        {
             sql.Append("SELECT * ");
-        }
 
         // FROM
         sql.Append($"FROM {query.Table} ");
@@ -351,69 +344,79 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         // WHERE
         if (query.Where != null)
         {
-            var whereClause = BuildWhereClause(query.Where);
-            if (!string.IsNullOrEmpty(whereClause))
-            {
-                sql.Append($"WHERE {whereClause} ");
-            }
+            var whereClause = BuildWhereClause(query.Where, parameters, ref pIndex);
+            if (!string.IsNullOrWhiteSpace(whereClause))
+                sql.Append("WHERE ").Append(whereClause).Append(' ');
         }
 
         // ORDER BY
-        if (query.OrderBy.Any())
+        if (query.OrderBy != null && query.OrderBy.Any())
         {
             sql.Append("ORDER BY ");
-            sql.Append(string.Join(", ", query.OrderBy.Select(o => $"{o.Field} {o.Direction}")));
-            sql.Append(" ");
+            sql.Append(string.Join(", ", query.OrderBy.Select(o => $"{o.Field} {o.Direction}"))).Append(' ');
         }
 
-        // LIMIT
+        // LIMIT/OFFSET（MySQL/PG 语法；SQLServer 可通过 TOP/OFFSET FETCH，这里先保持通用）
         if (query.Limit.HasValue)
         {
             sql.Append($"LIMIT {query.Limit.Value} ");
-            if (query.Offset.HasValue)
+            if (query.Offset.HasValue) sql.Append($"OFFSET {query.Offset.Value} ");
+        }
+
+        return (sql.ToString(), parameters);
+    }
+
+    private string BuildWhereClause(DataSourceWhere where, List<SugarParameter> parameters, ref int pIndex)
+    {
+        var parts = new List<string>();
+
+        if (where.Conditions != null)
+        {
+            foreach (var c in where.Conditions)
             {
-                sql.Append($"OFFSET {query.Offset.Value} ");
+                var op = c.Operator?.ToLower() ?? "eq";
+                if (op is "is_null" or "is_not_null")
+                {
+                    parts.Add($"{c.Field} {(op == "is_null" ? "IS NULL" : "IS NOT NULL")}");
+                    continue;
+                }
+
+                var pName = $"@p{pIndex++}";
+                var clause = op switch
+                {
+                    "eq" => $"{c.Field} = {pName}",
+                    "ne" => $"{c.Field} <> {pName}",
+                    "gt" => $"{c.Field} > {pName}",
+                    "gte" => $"{c.Field} >= {pName}",
+                    "lt" => $"{c.Field} < {pName}",
+                    "lte" => $"{c.Field} <= {pName}",
+                    "like" => $"{c.Field} LIKE {pName}",
+                    _ => $"{c.Field} = {pName}"
+                };
+
+                var val = op == "like" ? $"%{c.Value}%" : c.Value;
+                parameters.Add(new SugarParameter(pName, val));
+                parts.Add(clause);
             }
         }
 
-        return sql.ToString();
-    }
-
-    private string BuildWhereClause(DataSourceWhere where)
-    {
-        var conditions = new List<string>();
-
-        foreach (var condition in where.Conditions)
+        if (where.Groups != null)
         {
-            var clause = condition.Operator.ToLower() switch
+            foreach (var g in where.Groups)
             {
-                "eq" => $"{condition.Field} = '{condition.Value}'",
-                "ne" => $"{condition.Field} != '{condition.Value}'",
-                "gt" => $"{condition.Field} > '{condition.Value}'",
-                "gte" => $"{condition.Field} >= '{condition.Value}'",
-                "lt" => $"{condition.Field} < '{condition.Value}'",
-                "lte" => $"{condition.Field} <= '{condition.Value}'",
-                "like" => $"{condition.Field} LIKE '%{condition.Value}%'",
-                "is_null" => $"{condition.Field} IS NULL",
-                "is_not_null" => $"{condition.Field} IS NOT NULL",
-                _ => $"{condition.Field} = '{condition.Value}'"
-            };
-            conditions.Add(clause);
+                var inner = BuildWhereClause(g, parameters, ref pIndex);
+                if (!string.IsNullOrWhiteSpace(inner))
+                    parts.Add($"({inner})");
+            }
         }
 
-        foreach (var group in where.Groups)
-        {
-            var groupClause = BuildWhereClause(group);
-            if (!string.IsNullOrEmpty(groupClause))
-                conditions.Add($"({groupClause})");
-        }
-
-        return string.Join($" {where.Logic.ToUpper()} ", conditions);
+        var logic = string.IsNullOrWhiteSpace(where.Logic) ? "AND" : where.Logic.ToUpper();
+        return string.Join($" {logic} ", parts);
     }
 
     private async Task<int> InsertData(ISqlSugarClient db, DataSourceWrite write)
     {
-        if (!write.Data.Any()) return 0;
+        if (write.Data == null || !write.Data.Any()) return 0;
 
         var insertCount = 0;
         foreach (var item in write.Data)
@@ -425,7 +428,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
     private async Task<int> UpdateData(ISqlSugarClient db, DataSourceWrite write)
     {
-        if (!write.Data.Any()) return 0;
+        if (write.Data == null || !write.Data.Any()) return 0;
 
         var updateCount = 0;
         foreach (var item in write.Data)
@@ -433,9 +436,11 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
             var updateable = db.Updateable(item).AS(write.Table);
             if (write.Where != null)
             {
-                var whereClause = BuildWhereClause(write.Where);
-                if (!string.IsNullOrEmpty(whereClause))
-                    updateable = updateable.Where(whereClause);
+                var p = new List<SugarParameter>();
+                var idx = 0;
+                var whereClause = BuildWhereClause(write.Where, p, ref idx);
+                if (!string.IsNullOrWhiteSpace(whereClause))
+                    updateable = updateable.Where(whereClause, p);
             }
             updateCount += await updateable.ExecuteCommandAsync();
         }
@@ -447,9 +452,11 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         var deleteable = db.Deleteable<dynamic>().AS(write.Table);
         if (write.Where != null)
         {
-            var whereClause = BuildWhereClause(write.Where);
-            if (!string.IsNullOrEmpty(whereClause))
-                deleteable = deleteable.Where(whereClause);
+            var p = new List<SugarParameter>();
+            var idx = 0;
+            var whereClause = BuildWhereClause(write.Where, p, ref idx);
+            if (!string.IsNullOrWhiteSpace(whereClause))
+                deleteable = deleteable.Where(whereClause, p);
         }
         return await deleteable.ExecuteCommandAsync();
     }

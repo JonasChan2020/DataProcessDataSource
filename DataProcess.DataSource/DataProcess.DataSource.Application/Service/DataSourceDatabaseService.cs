@@ -120,13 +120,14 @@ public class DataSourceDatabaseService : IDynamicApiController, ITransient
         }
         else
         {
-            var adapter = _pluginManager.GetAdapter(instance.Type.PluginAssembly, instance.Type.AdapterClassName);
+            var adapter = _pluginManager.GetAdapter(instance.Type.AssemblyName, instance.Type.AdapterClassName);
             if (adapter == null)
                 throw Oops.Oh("无法创建数据源适配器");
             return adapter;
         }
     }
 
+    // 合并父→子配置，并回填到 ConfigJson
     private async Task<DataSourceInstance> GetInstanceAsync(long instanceId)
     {
         var instance = await _db.Queryable<DataSourceInstance>()
@@ -136,6 +137,46 @@ public class DataSourceDatabaseService : IDynamicApiController, ITransient
         if (instance == null)
             throw Oops.Oh("数据源实例不存在");
 
+        // 收集父链
+        var chain = new List<DataSourceInstance>();
+        var cursor = instance;
+        while (cursor.ParentId.HasValue)
+        {
+            var parent = await _db.Queryable<DataSourceInstance>()
+                .Where(i => i.Id == cursor.ParentId.Value)
+                .FirstAsync();
+            if (parent == null) break;
+            chain.Add(parent);
+            cursor = parent;
+        }
+        chain.Reverse(); // 父→子
+
+        // 依次合并：父.Parameters/ConfigJson -> ... -> 子.Parameters/OverrideJson/ConfigJson
+        var jsons = new List<string?>();
+        foreach (var p in chain)
+        {
+            jsons.Add(string.IsNullOrWhiteSpace(p.ConfigJson) ? p.Parameters : p.ConfigJson);
+        }
+        jsons.Add(string.IsNullOrWhiteSpace(instance.ConfigJson) ? instance.Parameters : instance.ConfigJson);
+        if (!string.IsNullOrWhiteSpace(instance.OverrideJson))
+            jsons.Add(instance.OverrideJson);
+
+        instance.ConfigJson = MergeConfigJson(jsons);
         return instance;
+    }
+
+    private static string MergeConfigJson(IEnumerable<string?> jsons)
+    {
+        var merged = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var j in jsons)
+        {
+            if (string.IsNullOrWhiteSpace(j)) continue;
+            var dict = JSON.Deserialize<Dictionary<string, object?>>(j) ?? new Dictionary<string, object?>();
+            foreach (var kv in dict)
+            {
+                merged[kv.Key] = kv.Value;
+            }
+        }
+        return JSON.Serialize(merged);
     }
 }
