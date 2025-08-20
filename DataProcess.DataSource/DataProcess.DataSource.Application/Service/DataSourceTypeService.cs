@@ -1,10 +1,18 @@
 using Furion.DynamicApiController;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
 using System.IO.Compression;
 using DataProcess.DataSource.Application.Entity;
 using DataProcess.DataSource.Application.Service.Dto;
 using DataProcess.DataSource.Application.Service.Plugin;
+using Furion.Json;
+using System.Text.Json;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace DataProcess.DataSource.Application.Service;
 
@@ -52,7 +60,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
             .OrderBy(t => t.OrderNo)
             .ThenBy(t => t.CreateTime)
             .ToListAsync();
-            
+
         return list.Adapt<List<DataSourceTypeDto>>();
     }
 
@@ -124,7 +132,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
         if (!string.IsNullOrEmpty(entity.PluginAssembly))
         {
             _pluginManager.UnloadPlugin(entity.PluginAssembly);
-            
+
             var pluginDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins", "datasource", entity.PluginAssembly);
             if (Directory.Exists(pluginDir))
                 Directory.Delete(pluginDir, true);
@@ -161,7 +169,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
             throw Oops.Oh("只支持ZIP格式文件");
 
         var pluginName = Path.GetFileNameWithoutExtension(zipFile.FileName);
-        
+
         using var stream = zipFile.OpenReadStream();
         var success = await _pluginManager.InstallPluginAsync(stream, pluginName);
         if (!success)
@@ -237,7 +245,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
         if (!string.IsNullOrEmpty(type.PluginAssembly))
         {
             _pluginManager.UnloadPlugin(type.PluginAssembly);
-            
+
             var pluginDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins", "datasource", type.PluginAssembly);
             if (Directory.Exists(pluginDir))
                 Directory.Delete(pluginDir, true);
@@ -258,7 +266,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
         using var stream = file.OpenReadStream();
         using var reader = new StreamReader(stream);
         var json = await reader.ReadToEndAsync();
-        
+
         var types = JSON.Deserialize<List<DataSourceTypeInput>>(json);
         if (types == null || !types.Any())
             throw Oops.Oh("导入文件格式错误或无数据");
@@ -295,7 +303,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
 
         var exportData = list.Adapt<List<DataSourceTypeInput>>();
         var json = JSON.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
-        
+
         var bytes = System.Text.Encoding.UTF8.GetBytes(json);
         return new FileContentResult(bytes, "application/json")
         {

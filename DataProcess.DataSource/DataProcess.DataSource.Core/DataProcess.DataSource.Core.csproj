@@ -5,6 +5,7 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<NoWarn>1701;1702;1591</NoWarn>
 		<DocumentationFile>DataProcess.DataSource.Core.xml</DocumentationFile>
+		 <ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 

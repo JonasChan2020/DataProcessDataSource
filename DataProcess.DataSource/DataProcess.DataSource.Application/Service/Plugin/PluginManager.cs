@@ -1,5 +1,11 @@
 using System.Reflection;
 using DataProcess.DataSource.Core.Plugin;
+using Furion.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DataProcess.DataSource.Application.Service.Plugin;
 
@@ -21,10 +27,13 @@ public class PluginManager : ISingleton
     /// <summary>
     /// ªÒ»°  ≈‰∆˜ µ¿˝
     /// </summary>
-    public IDataSourceAdapter? GetAdapter(string assemblyName, string className)
+    public IDataSourceAdapter? GetAdapter(string? assemblyName, string? className)
     {
+        if (string.IsNullOrEmpty(assemblyName) || string.IsNullOrEmpty(className))
+            return null;
+
         var key = $"{assemblyName}#{className}";
-        
+
         if (_adapterCache.TryGetValue(key, out var adapter))
             return adapter;
 
@@ -101,7 +110,7 @@ public class PluginManager : ISingleton
         try
         {
             var pluginPath = Path.Combine(_pluginDirectory, pluginName);
-            
+
             if (Directory.Exists(pluginPath))
                 Directory.Delete(pluginPath, true);
 
@@ -146,11 +155,11 @@ public class PluginManager : ISingleton
 /// </summary>
 public class PluginInfo
 {
-    public string Name { get; set; }
-    public string Code { get; set; }
-    public string Description { get; set; }
-    public string Version { get; set; }
-    public string AdapterClassName { get; set; }
-    public string ParamTemplate { get; set; }
-    public string Icon { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Version { get; set; } = string.Empty;
+    public string AdapterClassName { get; set; } = string.Empty;
+    public string ParamTemplate { get; set; } = string.Empty;
+    public string Icon { get; set; } = string.Empty;
 }

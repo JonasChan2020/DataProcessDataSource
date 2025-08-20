@@ -1,6 +1,13 @@
 using Furion.DynamicApiController;
 using DataProcess.DataSource.Core.Models;
 using DataProcess.DataSource.Application.Service.Plugin;
+using DataProcess.DataSource.Application.Entity;
+using DataProcess.DataSource.Application.Service.Adapter;
+using SqlSugar;
+using DataProcess.DataSource.Core.Plugin;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DataProcess.DataSource.Application.Service;
 
@@ -110,5 +117,5 @@ public class DataSourceQueryService : IDynamicApiController, ITransient
 public class BatchQueryInput
 {
     public long InstanceId { get; set; }
-    public DataSourceQuery Query { get; set; }
+    public DataSourceQuery Query { get; set; } = new();
 }

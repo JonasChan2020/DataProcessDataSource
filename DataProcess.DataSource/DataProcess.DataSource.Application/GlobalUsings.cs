@@ -18,3 +18,7 @@ global using DataProcess.DataSource.Application.Dto;
 global using DataProcess.DataSource.Application.Utils;
 global using DataProcess.DataSource.Application.Service.Plugin;
 global using DataProcess.DataSource.Application.Entity;
+global using System.IO.Compression;
+global using System.Reflection;
+global using DataProcess.DataSource.Core.Plugin;
+global using Furion.JsonSerialization;

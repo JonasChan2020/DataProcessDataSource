@@ -4,6 +4,15 @@ using System.Diagnostics;
 using DataProcess.DataSource.Application.Entity;
 using DataProcess.DataSource.Application.Service.Dto;
 using DataProcess.DataSource.Application.Service.Plugin;
+using DataProcess.DataSource.Application.Service.Adapter;
+using DataProcess.DataSource.Core.Plugin;
+using Microsoft.AspNetCore.Mvc;
+using Furion.Json;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 
 namespace DataProcess.DataSource.Application.Service;
 
@@ -280,7 +289,7 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
             result.Message = "连接测试异常";
             result.ErrorDetail = ex.Message;
             result.ResponseTime = stopwatch.ElapsedMilliseconds;
-            
+
             Log.Error("连接测试失败", ex);
         }
 
@@ -345,7 +354,7 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
         using var stream = file.OpenReadStream();
         using var reader = new StreamReader(stream);
         var json = await reader.ReadToEndAsync();
-        
+
         var instances = JSON.Deserialize<List<DataSourceInstanceInput>>(json);
         if (instances == null || !instances.Any())
             throw Oops.Oh("导入文件格式错误或无数据");
@@ -359,7 +368,7 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
             var existName = await _db.Queryable<DataSourceInstance>()
                 .Where(i => i.Name == instance.Name)
                 .AnyAsync();
-                
+
             if (!existCode && !existName)
             {
                 var entity = instance.Adapt<DataSourceInstance>();
@@ -386,7 +395,7 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
 
         var exportData = list.Adapt<List<DataSourceInstanceInput>>();
         var json = JSON.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
-        
+
         var bytes = System.Text.Encoding.UTF8.GetBytes(json);
         return new FileContentResult(bytes, "application/json")
         {

@@ -3,6 +3,10 @@ using DataProcess.DataSource.Core.Plugin;
 using DataProcess.DataSource.Core.Models;
 using System.Data;
 using System.Text;
+using Furion.Json;
+using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace DataProcess.DataSource.Application.Service.Adapter;
 
@@ -47,7 +51,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         });
 
         var schema = new DataSourceSchema();
-        
+
         var database = new DataSourceDatabase
         {
             Name = db.Ado.Connection.Database ?? "Unknown",
@@ -101,13 +105,13 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 
         var sql = BuildSqlFromQuery(query);
         var dataTable = await db.Ado.GetDataTableAsync(sql);
-        
+
         var result = new DataSourceResult
         {
             TotalCount = dataTable.Rows.Count,
             Columns = dataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToArray()
         };
-        
+
         foreach (DataRow row in dataTable.Rows)
         {
             var dict = new Dictionary<string, object>();
@@ -291,7 +295,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
     private string BuildSqlFromQuery(DataSourceQuery query)
     {
         var sql = new StringBuilder();
-        
+
         // SELECT
         if (query.Select.Any())
         {
@@ -301,10 +305,10 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         {
             sql.Append("SELECT * ");
         }
-        
+
         // FROM
         sql.Append($"FROM {query.Table} ");
-        
+
         // WHERE
         if (query.Where != null)
         {
@@ -314,7 +318,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
                 sql.Append($"WHERE {whereClause} ");
             }
         }
-        
+
         // ORDER BY
         if (query.OrderBy.Any())
         {
@@ -322,7 +326,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
             sql.Append(string.Join(", ", query.OrderBy.Select(o => $"{o.Field} {o.Direction}")));
             sql.Append(" ");
         }
-        
+
         // LIMIT
         if (query.Limit.HasValue)
         {
@@ -332,7 +336,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
                 sql.Append($"OFFSET {query.Offset.Value} ");
             }
         }
-        
+
         return sql.ToString();
     }
 
