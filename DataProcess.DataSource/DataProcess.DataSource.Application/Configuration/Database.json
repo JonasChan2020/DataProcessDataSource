@@ -7,25 +7,10 @@
     "EnableConsoleSql": false, // 启用控制台打印SQL
     "ConnectionConfigs": [
       {
-        //"ConfigId": "1300000000001", // 默认库标识-禁止修改
-        "DbType": "MySql", // MySql、SqlServer、Sqlite、Oracle、PostgreSQL、Dm、Kdbndp、Oscar、MySqlConnector、Access、OpenGauss、MongoDB、QuestDB、HG、ClickHouse、GBase、Odbc、Custom
-        //"ConnectionString": "DataSource=./Admin.NET.db", // Sqlite
-        //"ConnectionString": "PORT=5432;DATABASE=xxx;HOST=localhost;PASSWORD=xxx;USER ID=xxx", // PostgreSQL（Kdbndp、OpenGauss通用）
-        "ConnectionString": "Server=www.wsnowtech.cn;port=23306;Database=monitorsdb;Uid=root;Pwd=hxmysql;SslMode=None;AllowLoadLocalInfile=true;AllowUserVariables=true;", // MySql,
-        //"ConnectionString": "User Id=xxx; Password=xxx; Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=ORCL)))", // Oracle
-        //"ConnectionString": "Server=localhost;Database=xxx;User Id=xxx;Password=xxx;Encrypt=True;TrustServerCertificate=True;", // SqlServer
-        //"ConnectionString": "host=222.71.212.3;Port=27017;Database=testDB;Username= root;Password=123456;authSource=admin;replicaSet=", // MongoDB
-
-        //"SlaveConnectionConfigs": [ // 读写分离/主从
-        //	{
-        //		"HitRate": 10,
-        //		"ConnectionString": "DataSource=./Admin.NET1.db"
-        //	},
-        //	{
-        //		"HitRate": 10,
-        //		"ConnectionString": "DataSource=./Admin.NET2.db"
-        //	}
-        //],
+        "ConfigId": "MainDb",
+        "DbType": "SqlServer",
+        "ConnectionString": "Server=.;Database=DataSourceDb;Trusted_Connection=True;TrustServerCertificate=True;",
+        "IsAutoCloseConnection": true,
         "DbSettings": {
           "EnableInitDb": false, // 启用库初始化（若实体没有变化建议关闭）
           "EnableInitView": false, // 启用视图初始化（若实体和视图没有变化建议关闭）

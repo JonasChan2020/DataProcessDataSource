@@ -45,3 +45,6 @@ global using System.Text;
 global using System.Text.RegularExpressions;
 global using System.Web;
 global using DataProcess.DataSource.Core;
+global using System.Collections.Generic;
+global using System.Threading.Tasks;
+global using System.Threading;
