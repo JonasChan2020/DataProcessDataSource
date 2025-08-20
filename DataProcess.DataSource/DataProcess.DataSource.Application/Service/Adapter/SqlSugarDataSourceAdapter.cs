@@ -3,7 +3,6 @@ using DataProcess.DataSource.Core.Plugin;
 using DataProcess.DataSource.Core.Models;
 using System.Data;
 using System.Text;
-using Furion.Json;
 using System.Linq;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using System.Collections.Generic;
 namespace DataProcess.DataSource.Application.Service.Adapter;
 
 /// <summary>
-/// SqlSugarÊý¾ÝÔ´ÊÊÅäÆ÷£¨ÓÃÓÚÄÚÖÃÊý¾Ý¿âÀàÐÍ£©
+/// SqlSugarï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½Í£ï¿½
 /// </summary>
 public class SqlSugarDataSourceAdapter : IDataSourceAdapter
 {
@@ -41,7 +40,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
     public async Task<DataSourceSchema> GetSchemaAsync(string configJson)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -55,7 +54,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
         var database = new DataSourceDatabase
         {
             Name = db.Ado.Connection.Database ?? "Unknown",
-            Description = "µ±Ç°Êý¾Ý¿â"
+            Description = "ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ý¿ï¿½"
         };
 
         var tables = db.DbMaintenance.GetTableInfoList(false);
@@ -94,7 +93,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
     public async Task<DataSourceResult> QueryAsync(string configJson, DataSourceQuery query)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -128,7 +127,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
     public async Task<int> WriteAsync(string configJson, DataSourceWrite write)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -142,14 +141,14 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
             "insert" => await InsertData(db, write),
             "update" => await UpdateData(db, write),
             "delete" => await DeleteData(db, write),
-            _ => throw new NotSupportedException($"²»Ö§³ÖµÄ²Ù×÷ÀàÐÍ: {write.Operation}")
+            _ => throw new NotSupportedException($"ï¿½ï¿½Ö§ï¿½ÖµÄ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: {write.Operation}")
         };
     }
 
     public async Task<bool> CreateDatabaseAsync(string configJson, string databaseName)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -158,13 +157,13 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
             IsAutoCloseConnection = true
         });
 
-        return await db.DbMaintenance.CreateDatabaseAsync(databaseName);
+        return await Task.FromResult(db.DbMaintenance.CreateDatabase(databaseName));
     }
 
     public async Task<bool> DropDatabaseAsync(string configJson, string databaseName)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -180,7 +179,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
     public async Task<List<string>> GetDatabaseListAsync(string configJson)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -196,7 +195,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
     public async Task<List<DataSourceTable>> GetTableListAsync(string configJson)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -216,7 +215,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
     public async Task<bool> CreateTableAsync(string configJson, DataSourceTableSchema tableSchema)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -243,7 +242,7 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
     public async Task<bool> DropTableAsync(string configJson, string tableName)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {
@@ -252,13 +251,13 @@ public class SqlSugarDataSourceAdapter : IDataSourceAdapter
             IsAutoCloseConnection = true
         });
 
-        return await db.DbMaintenance.DropTableAsync(tableName);
+        return await Task.FromResult(db.DbMaintenance.DropTable(tableName));
     }
 
     public async Task<DataSourceTableSchema> GetTableSchemaAsync(string configJson, string tableName)
     {
         var config = JSON.Deserialize<SqlSugarConnectionConfig>(configJson);
-        if (config == null) throw new Exception("ÅäÖÃ¸ñÊ½´íÎó");
+        if (config == null) throw new Exception("ï¿½ï¿½ï¿½Ã¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var db = new SqlSugarClient(new ConnectionConfig
         {

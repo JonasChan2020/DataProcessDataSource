@@ -6,27 +6,132 @@
     <members>
         <member name="T:DataProcess.DataSource.Application.Dto.ApiResponse`1">
             <summary>
-            统一API响应模型
+            ͳһAPI��Ӧģ��
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Dto.DataSourceInstanceCreateDto">
             <summary>
-            新建数据源实例参数
+            �½�����Դʵ������
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Dto.DslQueryDto">
             <summary>
-            DSL 查询参数
+            DSL ��ѯ����
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Entity.DataSourceInstance">
             <summary>
-            数据源实例表
+            ����Դʵ����
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.Name">
+            <summary>
+            ʵ������
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.Code">
+            <summary>
+            ʵ�����루Ψһ��
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.TypeId">
+            <summary>
+            ����Id
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.ConfigJson">
+            <summary>
+            ���ò���(JSON)
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.ParentId">
+            <summary>
+            ����ʵ��Id
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.ConnectionStatus">
+            <summary>
+            ����״̬
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.LastConnectTime">
+            <summary>
+            �������ʱ��
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.Status">
+            <summary>
+            ״̬
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.Remark">
+            <summary>
+            ��ע
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceInstance.OrderNo">
+            <summary>
+            �����
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Entity.DataSourceType">
             <summary>
-            数据源类型表（内置/插件）
+            ����Դ���ͱ�������/�����
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.Name">
+            <summary>
+            ��������
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.Code">
+            <summary>
+            ���ͱ��루Ψһ��
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.Description">
+            <summary>
+            ����˵��
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.PluginAssembly">
+            <summary>
+            ���������
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.AdapterClassName">
+            <summary>
+            ����������
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.ParamTemplateJson">
+            <summary>
+            ����ģ��(JSON)
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.IsBuiltIn">
+            <summary>
+            �Ƿ���������
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.OrderNo">
+            <summary>
+            �����
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.Status">
+            <summary>
+            ״̬
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.Icon">
+            <summary>
+            ͼ��
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Entity.DataSourceType.Version">
+            <summary>
+            �汾��
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Entity.TestLog">
@@ -36,37 +141,322 @@
         </member>
         <member name="T:DataProcess.DataSource.Application.Entity.TestTable">
             <summary>
-            主库测试表
+            ������Ա�
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Adapter.SqlSugarDataSourceAdapter">
+            <summary>
+            SqlSugar����Դ�������������������ݿ����ͣ�
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceDatabaseService">
+            <summary>
+            ���ݿ��������
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.GetDatabaseList(System.Int64)">
+            <summary>
+            ��ȡ���ݿ��б�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.CreateDatabase(System.Int64,System.String)">
+            <summary>
+            �������ݿ�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.DropDatabase(System.Int64,System.String)">
+            <summary>
+            ɾ�����ݿ�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.GetTableList(System.Int64)">
+            <summary>
+            ��ȡ���б�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.CreateTable(System.Int64,DataProcess.DataSource.Core.Models.DataSourceTableSchema)">
+            <summary>
+            ������
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.DropTable(System.Int64,System.String)">
+            <summary>
+            ɾ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceDatabaseService.GetTableSchema(System.Int64,System.String)">
+            <summary>
+            ��ȡ���ṹ
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Service.DataSourceDslService">
             <summary>
-            DSL 查询服务
+            DSL ��ѯ����
             </summary>
         </member>
         <member name="M:DataProcess.DataSource.Application.Service.DataSourceDslService.Query(DataProcess.DataSource.Application.Dto.DslQueryDto)">
             <summary>
-            统一DSL查询（带结构校验和插件沙箱）
+            ͳһDSL��ѯ�����ṹУ��Ͳ��ɳ�䣩
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceInstanceService">
+            <summary>
+            ����Դʵ������
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Add(DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto)">
+            <summary>
+            ��������Դʵ��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Update(DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto)">
+            <summary>
+            �༭����Դʵ��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Delete(System.Int64)">
+            <summary>
+            ɾ������Դʵ��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.GetListAsync">
+            <summary>
+            ��ȡ��������Դʵ��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.TestConnection(System.Int64)">
+            <summary>
+            ��������
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Service.DataSourceMultiDbService">
             <summary>
-            多数据源事务示例服务
+            ������Դ����ʾ������
             </summary>
         </member>
         <member name="M:DataProcess.DataSource.Application.Service.DataSourceMultiDbService.MultiDbTranDemo">
             <summary>
-            跨库事务示例（mainDb 和 logDb）
+            �������ʾ����mainDb �� logDb��
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceQueryService">
+            <summary>
+            ���ݲ�ѯ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceQueryService.Query(System.Int64,DataProcess.DataSource.Core.Models.DataSourceQuery)">
+            <summary>
+            ͳһDSL��ѯ
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceQueryService.Write(System.Int64,DataProcess.DataSource.Core.Models.DataSourceWrite)">
+            <summary>
+            ͳһDSLд��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceQueryService.GetSchema(System.Int64)">
+            <summary>
+            ��ȡSchema
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceQueryService.BatchQuery(System.Collections.Generic.List{DataProcess.DataSource.Application.Service.BatchQueryInput})">
+            <summary>
+            ������ѯ��������Դ������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.BatchQueryInput">
+            <summary>
+            ������ѯ����
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceSeedDataService">
+            <summary>
+            ����Դ�������ݷ���
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceSeedDataService.InitBuiltInTypes">
+            <summary>
+            ��ʼ��SqlSugar֧�ֵ���������Դ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceSeedDataService.GetBuiltInTypeCodes">
+            <summary>
+            ��ȡ���������б�
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.DataSourceTypeService">
+            <summary>
+            ����Դ���ͷ���
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Page(DataProcess.DataSource.Application.Service.Dto.DataSourceTypePageInput)">
+            <summary>
+            ��ҳ��ѯ����Դ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.GetListAsync">
+            <summary>
+            ��ȡ��������Դ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Add(DataProcess.DataSource.Application.Service.Dto.DataSourceTypeInput)">
+            <summary>
+            ��������Դ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Update(DataProcess.DataSource.Application.Service.Dto.DataSourceTypeUpdateInput)">
+            <summary>
+            ��������Դ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Delete(DataProcess.DataSource.Application.Service.Dto.BaseIdInput)">
+            <summary>
+            ɾ������Դ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.GetDetail(System.Int64)">
+            <summary>
+            ��ȡ����Դ��������
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.UploadPlugin(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            �ϴ������ZIP��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.UninstallPlugin(System.String)">
+            <summary>
+            ж�ز��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Import(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            ��������Դ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Export">
+            <summary>
+            ��������Դ����
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.BasePageInput">
+            <summary>
+            ������ҳ����
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Service.Dto.BasePageInput.Page">
+            <summary>
+            ҳ��
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Service.Dto.BasePageInput.PageSize">
+            <summary>
+            ҳ��С
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.BaseIdInput">
+            <summary>
+            ����ID����
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Application.Service.Dto.BaseIdInput.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto">
+            <summary>
+            ����Դʵ�����
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceInput">
+            <summary>
+            ����Դʵ������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstancePageInput">
+            <summary>
+            ����Դʵ����ҳ��ѯ
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceUpdateInput">
+            <summary>
+            ����Դʵ����������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.TestConnectionInput">
+            <summary>
+            ���Ӳ�������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.TestConnectionResult">
+            <summary>
+            ���Ӳ��Խ��
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypeDto">
+            <summary>
+            ����Դ�������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypeInput">
+            <summary>
+            ����Դ��������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypePageInput">
+            <summary>
+            ����Դ���ͷ�ҳ��ѯ
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypeUpdateInput">
+            <summary>
+            ����Դ���͸�������
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginManager">
             <summary>
-            插件管理器（支持热插拔）
+            ���������
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.GetAdapter(System.String,System.String)">
+            <summary>
+            ��ȡ������ʵ��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.GetAssembly(System.String)">
+            <summary>
+            ��ȡ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.UnloadPlugin(System.String)">
+            <summary>
+            ж�ز��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.InstallPluginAsync(System.IO.Stream,System.String)">
+            <summary>
+            ��װ���
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Application.Service.Plugin.PluginManager.GetPluginInfoAsync(System.String)">
+            <summary>
+            ��ȡ�����Ϣ
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginInfo">
+            <summary>
+            �����Ϣ
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginSandboxManager">
             <summary>
-            插件沙箱隔离加载器
+            ���ɳ����������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Application.Startup.DataSourceDbInitializer">
+            <summary>
+            ����Դģ�����ݿ��ʼ��
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.SystemAppService">
@@ -82,7 +472,7 @@
         </member>
         <member name="T:DataProcess.DataSource.Application.Utils.DslSchemaValidator">
             <summary>
-            DSL JSON Schema 校验工具
+            DSL JSON Schema У�鹤��
             </summary>
         </member>
     </members>

@@ -6,9 +6,7 @@ using DataProcess.DataSource.Application.Service.Dto;
 using DataProcess.DataSource.Application.Service.Plugin;
 using DataProcess.DataSource.Application.Service.Adapter;
 using DataProcess.DataSource.Core.Plugin;
-using DataProcess.DataSource.Core.Entity;
 using Microsoft.AspNetCore.Mvc;
-using Furion.Json;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -18,9 +16,9 @@ using System.Text.Json;
 namespace DataProcess.DataSource.Application.Service;
 
 /// <summary>
-/// Êý¾ÝÔ´ÊµÀý·þÎñ
+/// ï¿½ï¿½ï¿½ï¿½Ô´Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
-[ApiDescriptionSettings("Êý¾ÝÔ´", Order = 2)]
+[ApiDescriptionSettings("ï¿½ï¿½ï¿½ï¿½Ô´", Order = 2)]
 public class DataSourceInstanceService : IDynamicApiController, ITransient
 {
     private readonly ISqlSugarClient _db;
@@ -33,7 +31,7 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// ÐÂÔöÊý¾ÝÔ´ÊµÀý
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Êµï¿½ï¿½
     /// </summary>
     public async Task<long> Add([FromBody] DataSourceInstanceDto dto)
     {
@@ -44,7 +42,7 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// ±à¼­Êý¾ÝÔ´ÊµÀý
+    /// ï¿½à¼­ï¿½ï¿½ï¿½ï¿½Ô´Êµï¿½ï¿½
     /// </summary>
     public async Task<bool> Update([FromBody] DataSourceInstanceDto dto)
     {
@@ -54,7 +52,7 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// É¾³ýÊý¾ÝÔ´ÊµÀý
+    /// É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Êµï¿½ï¿½
     /// </summary>
     public async Task<bool> Delete([FromBody] long id)
     {
@@ -63,7 +61,7 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// »ñÈ¡ËùÓÐÊý¾ÝÔ´ÊµÀý
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Êµï¿½ï¿½
     /// </summary>
     public async Task<List<DataSourceInstanceDto>> GetListAsync()
     {
@@ -72,17 +70,17 @@ public class DataSourceInstanceService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// ²âÊÔÁ¬½Ó
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public async Task<bool> TestConnection([FromBody] long id)
     {
         var instance = await _db.Queryable<DataSourceInstance>().InSingleAsync(id);
-        if (instance == null) throw Oops.Oh("ÊµÀý²»´æÔÚ");
-        var type = await _db.Queryable<DataSourceType>().FirstAsync(x => x.Code == instance.TypeCode);
-        if (type == null) throw Oops.Oh("ÀàÐÍ²»´æÔÚ");
+        if (instance == null) throw Oops.Oh("Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        var type = await _db.Queryable<DataSourceType>().FirstAsync(x => x.Id == instance.TypeId);
+        if (type == null) throw Oops.Oh("ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½");
 
-        var adapter = _pluginManager.GetAdapter(type.AssemblyName, type.AdapterClassName);
-        if (adapter == null) throw Oops.Oh("ÊÊÅäÆ÷¼ÓÔØÊ§°Ü");
+        var adapter = _pluginManager.GetAdapter(type.PluginAssembly!, type.AdapterClassName!);
+        if (adapter == null) throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
 
         return await adapter.TestConnectionAsync(instance.ConfigJson);
     }

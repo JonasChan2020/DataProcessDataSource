@@ -3,13 +3,14 @@ using SqlSugar;
 using DataProcess.DataSource.Application.Dto;
 using DataProcess.DataSource.Application.Utils;
 using DataProcess.DataSource.Application.Service.Plugin;
+using DataProcess.DataSource.Application.Entity;
 
 namespace DataProcess.DataSource.Application.Service;
 
 /// <summary>
-/// DSL ²éÑ¯·þÎñ
+/// DSL ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
 /// </summary>
-[ApiDescriptionSettings(Order = 210, Name = "DSL²éÑ¯")]
+[ApiDescriptionSettings(Order = 210, Name = "DSLï¿½ï¿½Ñ¯")]
 public class DataSourceDslService : IDynamicApiController, ITransient
 {
     private readonly ISqlSugarClient _db;
@@ -22,21 +23,21 @@ public class DataSourceDslService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// Í³Ò»DSL²éÑ¯£¨´ø½á¹¹Ð£ÑéºÍ²å¼þÉ³Ïä£©
+    /// Í³Ò»DSLï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹Ð£ï¿½ï¿½Í²ï¿½ï¿½É³ï¿½ä£©
     /// </summary>
     public async Task<ApiResponse<object>> Query([FromBody] DslQueryDto input)
     {
         DslSchemaValidator.Validate(input.Dsl);
 
         var instance = await _db.Queryable<DataSourceInstance>().InSingleAsync(input.InstanceId);
-        if (instance == null) throw Oops.Oh("Êý¾ÝÔ´ÊµÀý²»´æÔÚ");
+        if (instance == null) throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½Ô´Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 
         var type = await _db.Queryable<DataSourceType>().InSingleAsync(instance.TypeId);
-        if (type == null) throw Oops.Oh("Êý¾ÝÔ´ÀàÐÍ²»´æÔÚ");
+        if (type == null) throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½");
 
         var pluginPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins", "datasource", type.PluginAssembly, $"{type.PluginAssembly}.dll");
         var plugin = _pluginManager.LoadPlugin(pluginPath, type.PluginAssembly);
-        if (plugin == null) throw Oops.Oh("²å¼þÎ´¼ÓÔØ");
+        if (plugin == null) throw Oops.Oh("ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½");
 
         try
         {
@@ -45,7 +46,7 @@ public class DataSourceDslService : IDynamicApiController, ITransient
         }
         catch (Exception ex)
         {
-            return ApiResponse<object>.Fail("²å¼þ²éÑ¯Òì³£: " + ex.Message);
+            return ApiResponse<object>.Fail("ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ì³£: " + ex.Message);
         }
     }
 }

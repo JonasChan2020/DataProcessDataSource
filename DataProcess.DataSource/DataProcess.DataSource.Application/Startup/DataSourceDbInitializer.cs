@@ -1,10 +1,10 @@
-using DataProcess.DataSource.Core.Entity;
+using DataProcess.DataSource.Application.Entity;
 using SqlSugar;
 
 namespace DataProcess.DataSource.Application.Startup;
 
 /// <summary>
-/// Êý¾ÝÔ´Ä£¿éÊý¾Ý¿â³õÊ¼»¯
+/// ï¿½ï¿½ï¿½ï¿½Ô´Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Ê¼ï¿½ï¿½
 /// </summary>
 public class DataSourceDbInitializer : IStartupFilter
 {
@@ -15,21 +15,21 @@ public class DataSourceDbInitializer : IStartupFilter
             using var scope = app.ApplicationServices.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<ISqlSugarClient>();
 
-            // ×Ô¶¯½¨±í
+            // ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
             db.CodeFirst.InitTables<DataSourceType, DataSourceInstance>();
 
-            // ×¢ÈëÄÚÖÃÀàÐÍ£¨ÈçÎ´´æÔÚ£©
+            // ×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½Ú£ï¿½
             var builtInTypes = new[]
             {
                 new DataSourceType
                 {
                     Code = "SqlServer",
                     Name = "SqlServer",
-                    Description = "ÄÚÖÃSqlServerÊý¾ÝÔ´",
+                    Description = "ï¿½ï¿½ï¿½ï¿½SqlServerï¿½ï¿½ï¿½ï¿½Ô´",
                     Version = "1.0",
                     AdapterClassName = "DataProcess.DataSource.Adapter.SqlServer.SqlServerAdapter",
-                    AssemblyName = "DataProcess.DataSource.Adapter.SqlServer",
-                    ParamTemplate = "{\"Server\":\"\",\"Database\":\"\",\"UserId\":\"\",\"Password\":\"\"}",
+                    PluginAssembly = "DataProcess.DataSource.Adapter.SqlServer",
+                    ParamTemplateJson = "{\"Server\":\"\",\"Database\":\"\",\"UserId\":\"\",\"Password\":\"\"}",
                     Icon = "",
                     IsBuiltIn = true
                 },
@@ -37,15 +37,15 @@ public class DataSourceDbInitializer : IStartupFilter
                 {
                     Code = "MySql",
                     Name = "MySQL",
-                    Description = "ÄÚÖÃMySQLÊý¾ÝÔ´",
+                    Description = "ï¿½ï¿½ï¿½ï¿½MySQLï¿½ï¿½ï¿½ï¿½Ô´",
                     Version = "1.0",
                     AdapterClassName = "DataProcess.DataSource.Adapter.MySql.MySqlAdapter",
-                    AssemblyName = "DataProcess.DataSource.Adapter.MySql",
-                    ParamTemplate = "{\"Server\":\"\",\"Database\":\"\",\"UserId\":\"\",\"Password\":\"\"}",
+                    PluginAssembly = "DataProcess.DataSource.Adapter.MySql",
+                    ParamTemplateJson = "{\"Server\":\"\",\"Database\":\"\",\"UserId\":\"\",\"Password\":\"\"}",
                     Icon = "",
                     IsBuiltIn = true
                 }
-                // ¿É¼ÌÐøÀ©Õ¹ÆäËüÄÚÖÃÀàÐÍ
+                // ï¿½É¼ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             };
 
             foreach (var t in builtInTypes)

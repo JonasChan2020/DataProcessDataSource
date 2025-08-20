@@ -1,11 +1,12 @@
 using SqlSugar;
 using System;
 using System.Collections.Generic;
+using DbType = SqlSugar.DbType;
 
 namespace DataProcess.DataSource.Core.Models;
 
 /// <summary>
-/// Êý¾ÝÔ´Schema
+/// ï¿½ï¿½ï¿½ï¿½Ô´Schema
 /// </summary>
 public class DataSourceSchema
 {
@@ -14,7 +15,7 @@ public class DataSourceSchema
 }
 
 /// <summary>
-/// Êý¾Ý¿âÐÅÏ¢
+/// ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½Ï¢
 /// </summary>
 public class DataSourceDatabase
 {
@@ -24,7 +25,7 @@ public class DataSourceDatabase
 }
 
 /// <summary>
-/// Êý¾Ý±íÐÅÏ¢
+/// ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½Ï¢
 /// </summary>
 public class DataSourceTable
 {
@@ -34,7 +35,7 @@ public class DataSourceTable
 }
 
 /// <summary>
-/// Êý¾ÝÁÐÐÅÏ¢
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 /// </summary>
 public class DataSourceColumn
 {
@@ -49,7 +50,7 @@ public class DataSourceColumn
 }
 
 /// <summary>
-/// ±í½á¹¹¶¨Òå
+/// ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceTableSchema
 {
@@ -60,7 +61,7 @@ public class DataSourceTableSchema
 }
 
 /// <summary>
-/// Ë÷ÒýÐÅÏ¢
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 /// </summary>
 public class DataSourceIndex
 {
@@ -70,7 +71,7 @@ public class DataSourceIndex
 }
 
 /// <summary>
-/// DSL²éÑ¯¶ÔÏó
+/// DSLï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceQuery
 {
@@ -86,7 +87,7 @@ public class DataSourceQuery
 }
 
 /// <summary>
-/// Ìõ¼þ¶ÔÏó
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceWhere
 {
@@ -96,7 +97,7 @@ public class DataSourceWhere
 }
 
 /// <summary>
-/// µ¥¸öÌõ¼þ
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceCondition
 {
@@ -107,7 +108,7 @@ public class DataSourceCondition
 }
 
 /// <summary>
-/// Á¬½Ó²éÑ¯
+/// ï¿½ï¿½ï¿½Ó²ï¿½Ñ¯
 /// </summary>
 public class DataSourceJoin
 {
@@ -118,7 +119,7 @@ public class DataSourceJoin
 }
 
 /// <summary>
-/// ÅÅÐò
+/// ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceOrderBy
 {
@@ -127,7 +128,7 @@ public class DataSourceOrderBy
 }
 
 /// <summary>
-/// ·Ö×é
+/// ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceGroupBy
 {
@@ -135,14 +136,14 @@ public class DataSourceGroupBy
 }
 
 /// <summary>
-/// HavingÌõ¼þ
+/// Havingï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceHaving : DataSourceWhere
 {
 }
 
 /// <summary>
-/// Ð´ÈëÊý¾Ý¶ÔÏó
+/// Ð´ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceWrite
 {
@@ -154,7 +155,7 @@ public class DataSourceWrite
 }
 
 /// <summary>
-/// ²éÑ¯½á¹û
+/// ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½
 /// </summary>
 public class DataSourceResult
 {
@@ -165,7 +166,7 @@ public class DataSourceResult
 }
 
 /// <summary>
-/// SqlSugarÁ¬½ÓÅäÖÃ
+/// SqlSugarï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class SqlSugarConnectionConfig
 {

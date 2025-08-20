@@ -24,6 +24,16 @@
             SqlSugar 数据库实例
             </summary>
         </member>
+        <member name="T:DataProcess.DataSource.Core.Entity.DataSourceInstance">
+            <summary>
+            ����Դʵ��
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Entity.DataSourceType">
+            <summary>
+            ����Դ���ͣ����/���ã�
+            </summary>
+        </member>
         <member name="T:DataProcess.DataSource.Core.EntityBaseId">
             <summary>
             框架实体基类Id
@@ -47,51 +57,6 @@
         <member name="P:DataProcess.DataSource.Core.EntityBase.UpdateTime">
             <summary>
             更新时间
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.CreateUserId">
-            <summary>
-            创建者Id
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.CreateUserName">
-            <summary>
-            创建者姓名
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.UpdateUserId">
-            <summary>
-            修改者Id
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.UpdateUserName">
-            <summary>
-            修改者姓名
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityBase.IsDelete">
-            <summary>
-            软删除
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Core.EntityTenant">
-            <summary>
-            租户实体基类
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityTenant.TenantId">
-            <summary>
-            租户Id
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Core.EntityTenantId">
-            <summary>
-            租户实体基类Id
-            </summary>
-        </member>
-        <member name="P:DataProcess.DataSource.Core.EntityTenantId.TenantId">
-            <summary>
-            租户Id
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Core.IDeletedFilter">
@@ -124,10 +89,254 @@
             创建者部门Id
             </summary>
         </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceSchema">
+            <summary>
+            ����ԴSchema
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceDatabase">
+            <summary>
+            ���ݿ���Ϣ
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceTable">
+            <summary>
+            ���ݱ���Ϣ
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceColumn">
+            <summary>
+            ��������Ϣ
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceTableSchema">
+            <summary>
+            ���ṹ����
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceIndex">
+            <summary>
+            ������Ϣ
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceQuery">
+            <summary>
+            DSL��ѯ����
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceWhere">
+            <summary>
+            ��������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceCondition">
+            <summary>
+            ��������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceJoin">
+            <summary>
+            ���Ӳ�ѯ
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceOrderBy">
+            <summary>
+            ����
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceGroupBy">
+            <summary>
+            ����
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceHaving">
+            <summary>
+            Having����
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceWrite">
+            <summary>
+            д�����ݶ���
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.DataSourceResult">
+            <summary>
+            ��ѯ���
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Models.SqlSugarConnectionConfig">
+            <summary>
+            SqlSugar��������
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter">
+            <summary>
+            ����Դ�������ӿ�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.TestConnectionAsync(System.String)">
+            <summary>
+            ��������
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.GetSchemaAsync(System.String)">
+            <summary>
+            ��ȡ���ݿ�Schema
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.QueryAsync(System.String,DataProcess.DataSource.Core.Models.DataSourceQuery)">
+            <summary>
+            ִ��DSL��ѯ
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.WriteAsync(System.String,DataProcess.DataSource.Core.Models.DataSourceWrite)">
+            <summary>
+            ִ��DSLд��
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.CreateDatabaseAsync(System.String,System.String)">
+            <summary>
+            �������ݿ�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.DropDatabaseAsync(System.String,System.String)">
+            <summary>
+            ɾ�����ݿ�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.GetDatabaseListAsync(System.String)">
+            <summary>
+            ��ȡ���ݿ��б�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.GetTableListAsync(System.String)">
+            <summary>
+            ��ȡ���б�
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.CreateTableAsync(System.String,DataProcess.DataSource.Core.Models.DataSourceTableSchema)">
+            <summary>
+            ������
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.DropTableAsync(System.String,System.String)">
+            <summary>
+            ɾ����
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.Plugin.IDataSourceAdapter.GetTableSchemaAsync(System.String,System.String)">
+            <summary>
+            ��ȡ���ṹ
+            </summary>
+        </member>
         <member name="T:DataProcess.DataSource.Core.Plugin.IDataSourcePlugin">
             <summary>
-            数据源插件适配器接口
+            ����Դ����������ӿ�
             </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.SqlSugarPagedList`1">
+            <summary>
+            分页泛型集合
+            </summary>
+            <typeparam name="TEntity"></typeparam>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.SqlSugarPagedList`1.Page">
+            <summary>
+            页码
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.SqlSugarPagedList`1.PageSize">
+            <summary>
+            页容量
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.SqlSugarPagedList`1.Total">
+            <summary>
+            总条数
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.SqlSugarPagedList`1.TotalPages">
+            <summary>
+            总页数
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.SqlSugarPagedList`1.Items">
+            <summary>
+            当前页集合
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.SqlSugarPagedList`1.HasPrevPage">
+            <summary>
+            是否有上一页
+            </summary>
+        </member>
+        <member name="P:DataProcess.DataSource.Core.SqlSugarPagedList`1.HasNextPage">
+            <summary>
+            是否有下一页
+            </summary>
+        </member>
+        <member name="T:DataProcess.DataSource.Core.SqlSugarPagedExtensions">
+            <summary>
+            分页拓展类
+            </summary>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.SqlSugarPagedExtensions.ToPagedList``2(SqlSugar.ISugarQueryable{``0},System.Int32,System.Int32,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            分页拓展
+            </summary>
+            <param name="query"><see cref="T:SqlSugar.ISugarQueryable`1"/>对象</param>
+            <param name="pageIndex">当前页码，从1开始</param>
+            <param name="pageSize">页码容量</param>
+            <param name="expression">查询结果 Select 表达式</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.SqlSugarPagedExtensions.ToPagedList``1(SqlSugar.ISugarQueryable{``0},System.Int32,System.Int32)">
+            <summary>
+            分页拓展
+            </summary>
+            <param name="query"><see cref="T:SqlSugar.ISugarQueryable`1"/>对象</param>
+            <param name="pageIndex">当前页码，从1开始</param>
+            <param name="pageSize">页码容量</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.SqlSugarPagedExtensions.ToPagedListAsync``2(SqlSugar.ISugarQueryable{``0},System.Int32,System.Int32,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            分页拓展
+            </summary>
+            <param name="query"><see cref="T:SqlSugar.ISugarQueryable`1"/>对象</param>
+            <param name="pageIndex">当前页码，从1开始</param>
+            <param name="pageSize">页码容量</param>
+            <param name="expression">查询结果 Select 表达式</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.SqlSugarPagedExtensions.ToPagedListAsync``1(SqlSugar.ISugarQueryable{``0},System.Int32,System.Int32)">
+            <summary>
+            分页拓展
+            </summary>
+            <param name="query"><see cref="T:SqlSugar.ISugarQueryable`1"/>对象</param>
+            <param name="pageIndex">当前页码，从1开始</param>
+            <param name="pageSize">页码容量</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.SqlSugarPagedExtensions.ToPagedList``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32)">
+            <summary>
+            分页拓展
+            </summary>
+            <param name="list">集合对象</param>
+            <param name="pageIndex">当前页码，从1开始</param>
+            <param name="pageSize">页码容量</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataProcess.DataSource.Core.SqlSugarPagedExtensions.CreateSqlSugarPagedList``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32,System.Int32)">
+            <summary>
+            创建 <see cref="T:DataProcess.DataSource.Core.SqlSugarPagedList`1"/> 对象
+            </summary>
+            <typeparam name="TEntity"></typeparam>
+            <param name="items">分页内容的对象集合</param>
+            <param name="total">总条数</param>
+            <param name="pageIndex">当前页码，从1开始</param>
+            <param name="pageSize">页码容量</param>
+            <returns></returns>
         </member>
     </members>
 </doc>

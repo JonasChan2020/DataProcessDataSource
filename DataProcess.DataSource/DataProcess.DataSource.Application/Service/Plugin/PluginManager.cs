@@ -1,6 +1,5 @@
 using System.Reflection;
 using DataProcess.DataSource.Core.Plugin;
-using Furion.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 namespace DataProcess.DataSource.Application.Service.Plugin;
 
 /// <summary>
-/// ²å¼þ¹ÜÀíÆ÷
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class PluginManager : ISingleton
 {
@@ -25,7 +24,7 @@ public class PluginManager : ISingleton
     }
 
     /// <summary>
-    /// »ñÈ¡ÊÊÅäÆ÷ÊµÀý
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½
     /// </summary>
     public IDataSourceAdapter? GetAdapter(string? assemblyName, string? className)
     {
@@ -54,13 +53,13 @@ public class PluginManager : ISingleton
         }
         catch (Exception ex)
         {
-            Log.Error($"´´½¨ÊÊÅäÆ÷ÊµÀýÊ§°Ü: {assemblyName}#{className}", ex);
+            Log.Error($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ê§ï¿½ï¿½: {assemblyName}#{className}", ex);
             return null;
         }
     }
 
     /// <summary>
-    /// »ñÈ¡³ÌÐò¼¯
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private Assembly? GetAssembly(string assemblyName)
     {
@@ -83,13 +82,13 @@ public class PluginManager : ISingleton
         }
         catch (Exception ex)
         {
-            Log.Error($"¼ÓÔØ³ÌÐò¼¯Ê§°Ü: {assemblyName}", ex);
+            Log.Error($"ï¿½ï¿½ï¿½Ø³ï¿½ï¿½ï¿½Ê§ï¿½ï¿½: {assemblyName}", ex);
             return null;
         }
     }
 
     /// <summary>
-    /// Ð¶ÔØ²å¼þ
+    /// Ð¶ï¿½Ø²ï¿½ï¿½
     /// </summary>
     public void UnloadPlugin(string assemblyName)
     {
@@ -103,7 +102,7 @@ public class PluginManager : ISingleton
     }
 
     /// <summary>
-    /// °²×°²å¼þ
+    /// ï¿½ï¿½×°ï¿½ï¿½ï¿½
     /// </summary>
     public async Task<bool> InstallPluginAsync(Stream zipStream, string pluginName)
     {
@@ -123,13 +122,13 @@ public class PluginManager : ISingleton
         }
         catch (Exception ex)
         {
-            Log.Error($"°²×°²å¼þÊ§°Ü: {pluginName}", ex);
+            Log.Error($"ï¿½ï¿½×°ï¿½ï¿½ï¿½Ê§ï¿½ï¿½: {pluginName}", ex);
             return false;
         }
     }
 
     /// <summary>
-    /// »ñÈ¡²å¼þÐÅÏ¢
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
     /// </summary>
     public async Task<PluginInfo?> GetPluginInfoAsync(string pluginName)
     {
@@ -144,14 +143,14 @@ public class PluginManager : ISingleton
         }
         catch (Exception ex)
         {
-            Log.Error($"¶ÁÈ¡²å¼þÐÅÏ¢Ê§°Ü: {pluginName}", ex);
+            Log.Error($"ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢Ê§ï¿½ï¿½: {pluginName}", ex);
             return null;
         }
     }
 }
 
 /// <summary>
-/// ²å¼þÐÅÏ¢
+/// ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 /// </summary>
 public class PluginInfo
 {

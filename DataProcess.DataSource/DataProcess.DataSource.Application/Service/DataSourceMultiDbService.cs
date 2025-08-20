@@ -3,16 +3,17 @@ using Furion.FriendlyException;              // Oops
 using Microsoft.Extensions.Logging;          // ILogger<T>
 using SqlSugar;
 using DataProcess.DataSource.Application.Dto;
+using DataProcess.DataSource.Application.Entity;
 
 namespace DataProcess.DataSource.Application.Service;
 
 /// <summary>
-/// ¶àÊý¾ÝÔ´ÊÂÎñÊ¾Àý·þÎñ
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
-[ApiDescriptionSettings(Order = 200, Name = "¶àÊý¾ÝÔ´ÊÂÎñ")]
+[ApiDescriptionSettings(Order = 200, Name = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½")]
 public class DataSourceMultiDbService : IDynamicApiController, ITransient
 {
-    private readonly ISqlSugarClient _db;                       // Í³Ò»ÓÃ ISqlSugarClient
+    private readonly ISqlSugarClient _db;                       // Í³Ò»ï¿½ï¿½ ISqlSugarClient
     private readonly ILogger<DataSourceMultiDbService> _logger;
 
     public DataSourceMultiDbService(ISqlSugarClient db,
@@ -23,7 +24,7 @@ public class DataSourceMultiDbService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// ¿ç¿âÊÂÎñÊ¾Àý£¨mainDb ºÍ logDb£©
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½mainDb ï¿½ï¿½ logDbï¿½ï¿½
     /// </summary>
     public async Task<ApiResponse<bool>> MultiDbTranDemo()
     {
@@ -34,14 +35,14 @@ public class DataSourceMultiDbService : IDynamicApiController, ITransient
             var mainDb = tenant.GetConnectionScope("mainDb");
             var logDb = tenant.GetConnectionScope("logDb");
 
-            await mainDb.Insertable(new TestTable { Name = "Ö÷¿âÊý¾Ý" }).ExecuteCommandAsync();
-            await logDb.Insertable(new TestLog { Log = "ÈÕÖ¾¿âÊý¾Ý" }).ExecuteCommandAsync();
-            // UseTranAsync µÄ lambda ²»Òª return Öµ
+            await mainDb.Insertable(new TestTable { Name = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" }).ExecuteCommandAsync();
+            await logDb.Insertable(new TestLog { Log = "ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" }).ExecuteCommandAsync();
+            // UseTranAsync ï¿½ï¿½ lambda ï¿½ï¿½Òª return Öµ
         },
-        ex => _logger.LogError(ex, "¿ç¿âÊÂÎñÊ§°Ü"));
+        ex => _logger.LogError(ex, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½"));
 
         if (!result.IsSuccess)
-            throw Oops.Oh("¶à¿âÊÂÎñÊ§°Ü£º" + result.ErrorMessage);
+            throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½" + result.ErrorMessage);
 
         return ApiResponse<bool>.Success(true);
     }

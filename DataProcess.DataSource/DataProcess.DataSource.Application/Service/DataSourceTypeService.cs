@@ -6,7 +6,6 @@ using System.IO.Compression;
 using DataProcess.DataSource.Application.Entity;
 using DataProcess.DataSource.Application.Service.Dto;
 using DataProcess.DataSource.Application.Service.Plugin;
-using Furion.Json;
 using System.Text.Json;
 using System;
 using System.Threading.Tasks;
@@ -17,9 +16,9 @@ using System.Linq;
 namespace DataProcess.DataSource.Application.Service;
 
 /// <summary>
-/// Êý¾ÝÔ´ÀàÐÍ·þÎñ
+/// ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½
 /// </summary>
-[ApiDescriptionSettings("Êý¾ÝÔ´", Order = 1)]
+[ApiDescriptionSettings("ï¿½ï¿½ï¿½ï¿½Ô´", Order = 1)]
 public class DataSourceTypeService : IDynamicApiController, ITransient
 {
     private readonly ISqlSugarClient _db;
@@ -32,7 +31,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// ·ÖÒ³²éÑ¯Êý¾ÝÔ´ÀàÐÍ
+    /// ï¿½ï¿½Ò³ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [HttpPost]
     public async Task<SqlSugarPagedList<DataSourceTypeDto>> Page(DataSourceTypePageInput input)
@@ -43,14 +42,14 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
             .WhereIF(input.IsBuiltIn.HasValue, t => t.IsBuiltIn == input.IsBuiltIn)
             .WhereIF(input.Status.HasValue, t => t.Status == input.Status)
             .OrderBy(t => t.OrderNo)
-            .ThenBy(t => t.CreateTime);
+            .OrderBy(t => t.CreateTime);
 
         var result = await query.ToPagedListAsync(input.Page, input.PageSize);
         return result.Adapt<SqlSugarPagedList<DataSourceTypeDto>>();
     }
 
     /// <summary>
-    /// »ñÈ¡ËùÓÐÊý¾ÝÔ´ÀàÐÍ
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public async Task<List<DataSourceTypeDto>> GetListAsync()
     {
@@ -59,7 +58,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// ÐÂÔöÊý¾ÝÔ´ÀàÐÍ
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [HttpPost]
     public async Task<long> Add(DataSourceTypeInput input)
@@ -68,7 +67,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
             .Where(t => t.Code == input.Code)
             .AnyAsync();
         if (exist)
-            throw Oops.Oh("ÀàÐÍ±àÂëÒÑ´æÔÚ");
+            throw Oops.Oh("ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½ï¿½ï¿½");
 
         var entity = input.Adapt<DataSourceType>();
         entity.CreateTime = DateTime.Now;
@@ -77,7 +76,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// ¸üÐÂÊý¾ÝÔ´ÀàÐÍ
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [HttpPost]
     public async Task Update(DataSourceTypeUpdateInput input)
@@ -86,16 +85,16 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
             .Where(t => t.Code == input.Code && t.Id != input.Id)
             .AnyAsync();
         if (exist)
-            throw Oops.Oh("ÀàÐÍ±àÂëÒÑ´æÔÚ");
+            throw Oops.Oh("ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½ï¿½ï¿½");
 
         var entity = await _db.Queryable<DataSourceType>()
             .Where(t => t.Id == input.Id)
             .FirstAsync();
         if (entity == null)
-            throw Oops.Oh("Êý¾ÝÔ´ÀàÐÍ²»´æÔÚ");
+            throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½");
 
         if (entity.IsBuiltIn)
-            throw Oops.Oh("ÄÚÖÃÀàÐÍ²»ÔÊÐíÐÞ¸Ä");
+            throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½");
 
         entity = input.Adapt(entity);
         entity.UpdateTime = DateTime.Now;
@@ -103,7 +102,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// É¾³ýÊý¾ÝÔ´ÀàÐÍ
+    /// É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [HttpPost]
     public async Task Delete(BaseIdInput input)
@@ -115,13 +114,13 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
             return;
 
         if (entity.IsBuiltIn)
-            throw Oops.Oh("ÄÚÖÃÀàÐÍ²»ÔÊÐíÉ¾³ý");
+            throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½");
 
         var hasInstances = await _db.Queryable<DataSourceInstance>()
             .Where(i => i.TypeId == input.Id)
             .AnyAsync();
         if (hasInstances)
-            throw Oops.Oh("¸ÃÀàÐÍÏÂ´æÔÚÊý¾ÝÔ´ÊµÀý£¬ÎÞ·¨É¾³ý");
+            throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Êµï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½É¾ï¿½ï¿½");
 
         if (!string.IsNullOrEmpty(entity.PluginAssembly))
         {
@@ -136,7 +135,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// »ñÈ¡Êý¾ÝÔ´ÀàÐÍÏêÇé
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [HttpGet]
     public async Task<DataSourceTypeDto> GetDetail(long id)
@@ -145,25 +144,25 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
             .Where(t => t.Id == id)
             .FirstAsync();
         if (entity == null)
-            throw Oops.Oh("Êý¾ÝÔ´ÀàÐÍ²»´æÔÚ");
+            throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½");
 
         return entity.Adapt<DataSourceTypeDto>();
     }
 
     /// <summary>
-    /// ÉÏ´«²å¼þ£¨ZIP£©
+    /// ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ZIPï¿½ï¿½
     /// </summary>
     public async Task<bool> UploadPlugin([FromForm] IFormFile file)
     {
-        if (file == null || file.Length == 0) throw Oops.Oh("ÎÄ¼þ²»ÄÜÎª¿Õ");
+        if (file == null || file.Length == 0) throw Oops.Oh("ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½");
         var pluginName = Path.GetFileNameWithoutExtension(file.FileName);
         using var stream = file.OpenReadStream();
         var ok = await _pluginManager.InstallPluginAsync(stream, pluginName);
-        if (!ok) throw Oops.Oh("²å¼þ°²×°Ê§°Ü");
+        if (!ok) throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½ï¿½×°Ê§ï¿½ï¿½");
 
-        // ¶ÁÈ¡ plugin.json ²¢×¢²áÀàÐÍ
+        // ï¿½ï¿½È¡ plugin.json ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         var info = await _pluginManager.GetPluginInfoAsync(pluginName);
-        if (info == null) throw Oops.Oh("plugin.json È±Ê§»ò¸ñÊ½´íÎó");
+        if (info == null) throw Oops.Oh("plugin.json È±Ê§ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½");
 
         var type = new DataSourceType
         {
@@ -172,36 +171,36 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
             Description = info.Description,
             Version = info.Version,
             AdapterClassName = info.AdapterClassName,
-            AssemblyName = pluginName,
-            ParamTemplate = info.ParamTemplate,
+            PluginAssembly = pluginName,
+            ParamTemplateJson = info.ParamTemplate,
             Icon = info.Icon,
             IsBuiltIn = false
         };
-        // ¸²¸Ç»òÐÂÔö
+        // ï¿½ï¿½ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½
         await _db.Storageable(type).ExecuteCommandAsync();
         return true;
     }
 
     /// <summary>
-    /// Ð¶ÔØ²å¼þ
+    /// Ð¶ï¿½Ø²ï¿½ï¿½
     /// </summary>
     public async Task<bool> UninstallPlugin([FromBody] string code)
     {
         var type = await _db.Queryable<DataSourceType>().FirstAsync(x => x.Code == code);
-        if (type == null || type.IsBuiltIn) throw Oops.Oh("ÀàÐÍ²»´æÔÚ»òÎªÄÚÖÃÀàÐÍ");
-        _pluginManager.UnloadPlugin(type.AssemblyName);
+        if (type == null || type.IsBuiltIn) throw Oops.Oh("ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½Ú»ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        _pluginManager.UnloadPlugin(type.PluginAssembly!);
         await _db.Deleteable<DataSourceType>().Where(x => x.Code == code).ExecuteCommandAsync();
         return true;
     }
 
     /// <summary>
-    /// µ¼ÈëÊý¾ÝÔ´ÀàÐÍ
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [HttpPost]
     public async Task Import(IFormFile file)
     {
         if (file == null || file.Length == 0)
-            throw Oops.Oh("ÇëÑ¡Ôñµ¼ÈëÎÄ¼þ");
+            throw Oops.Oh("ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½");
 
         using var stream = file.OpenReadStream();
         using var reader = new StreamReader(stream);
@@ -209,7 +208,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
 
         var types = JSON.Deserialize<List<DataSourceTypeInput>>(json);
         if (types == null || !types.Any())
-            throw Oops.Oh("µ¼ÈëÎÄ¼þ¸ñÊ½´íÎó»òÎÞÊý¾Ý");
+            throw Oops.Oh("ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 
         var insertList = new List<DataSourceType>();
         foreach (var type in types)
@@ -232,7 +231,7 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// µ¼³öÊý¾ÝÔ´ÀàÐÍ
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> Export()
