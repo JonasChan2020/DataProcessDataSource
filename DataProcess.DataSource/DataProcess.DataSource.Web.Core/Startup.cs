@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SqlSugar;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DataProcess.DataSource.Web.Core
 {
@@ -16,68 +17,43 @@ namespace DataProcess.DataSource.Web.Core
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            // 注册 SqlSugar（需实现类似 Admin.NET.Core/SqlSugar/SqlSugarSetup.cs 的 AddSqlSugar 扩展方法，或直接在此处实现初始化）
+            // 注册 SqlSugar
             services.AddSingleton<ISqlSugarClient>(provider =>
             {
-                // 读取配置文件，初始化 SqlSugarScope
-                var configs = App.GetConfig<List<ConnectionConfig>>("ConnectionConfigs");
+                var configs = App.GetConfig<List<ConnectionConfig>>("ConnectionConfigs") ?? new List<ConnectionConfig>();
+
+                // 兜底为每个连接设置 ConfigId，避免后续通过 ConfigId 获取 Provider 失败
+                foreach (var c in configs)
+                {
+                    if (c.ConfigId == null || string.IsNullOrWhiteSpace(c.ConfigId.ToString()))
+                        c.ConfigId = "main";
+                }
+
                 return new SqlSugarScope(configs, db => { });
             });
 
-            // 注册 JWT（如有需要可自定义 JwtHandler）
             services.AddJwt<JwtHandler>();
-
-            // 注册统一异常处理
             services.AddConsoleFormatter();
-
-            // 注册 CORS
             services.AddCorsAccessor();
-
-            // 注册 Furion 动态 WebAPI + 统一响应
-            services.AddControllers()
-                    .AddInjectWithUnifyResult();
-
-            // 注册 Swagger/OpenAPI
+            services.AddControllers().AddInjectWithUnifyResult();
             services.AddSpecificationDocuments();
-
-            // 注册日志
             services.AddLogging();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/error");
-                app.UseHsts();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            else { app.UseExceptionHandler("/error"); app.UseHsts(); }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseCorsAccessor();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
-            // 启用 Swagger
             app.UseSpecificationDocuments();
-
-            // 启用统一异常状态码拦截
             app.UseUnifyResultStatusCodes();
-
-            // 启用 Furion 动态 WebAPI
             app.UseInject(string.Empty);
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }
