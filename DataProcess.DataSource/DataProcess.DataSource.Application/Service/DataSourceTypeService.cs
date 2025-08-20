@@ -17,9 +17,9 @@ using System.Linq;
 namespace DataProcess.DataSource.Application.Service;
 
 /// <summary>
-/// 数据源类型管理服务
+/// 数据源类型服务
 /// </summary>
-[ApiDescriptionSettings(Order = 100, Name = "数据源类型管理")]
+[ApiDescriptionSettings("数据源", Order = 1)]
 public class DataSourceTypeService : IDynamicApiController, ITransient
 {
     private readonly ISqlSugarClient _db;
@@ -50,17 +50,11 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// 获取数据源类型列表
+    /// 获取所有数据源类型
     /// </summary>
-    [HttpGet]
-    public async Task<List<DataSourceTypeDto>> GetList()
+    public async Task<List<DataSourceTypeDto>> GetListAsync()
     {
-        var list = await _db.Queryable<DataSourceType>()
-            .Where(t => t.Status == true)
-            .OrderBy(t => t.OrderNo)
-            .ThenBy(t => t.CreateTime)
-            .ToListAsync();
-
+        var list = await _db.Queryable<DataSourceType>().ToListAsync();
         return list.Adapt<List<DataSourceTypeDto>>();
     }
 
@@ -157,101 +151,47 @@ public class DataSourceTypeService : IDynamicApiController, ITransient
     }
 
     /// <summary>
-    /// 上传插件ZIP包
+    /// 上传插件（ZIP）
     /// </summary>
-    [HttpPost]
-    public async Task<string> UploadPlugin(IFormFile zipFile)
+    public async Task<bool> UploadPlugin([FromForm] IFormFile file)
     {
-        if (zipFile == null || zipFile.Length == 0)
-            throw Oops.Oh("请选择ZIP文件");
+        if (file == null || file.Length == 0) throw Oops.Oh("文件不能为空");
+        var pluginName = Path.GetFileNameWithoutExtension(file.FileName);
+        using var stream = file.OpenReadStream();
+        var ok = await _pluginManager.InstallPluginAsync(stream, pluginName);
+        if (!ok) throw Oops.Oh("插件安装失败");
 
-        if (!zipFile.FileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-            throw Oops.Oh("只支持ZIP格式文件");
+        // 读取 plugin.json 并注册类型
+        var info = await _pluginManager.GetPluginInfoAsync(pluginName);
+        if (info == null) throw Oops.Oh("plugin.json 缺失或格式错误");
 
-        var pluginName = Path.GetFileNameWithoutExtension(zipFile.FileName);
-
-        using var stream = zipFile.OpenReadStream();
-        var success = await _pluginManager.InstallPluginAsync(stream, pluginName);
-        if (!success)
-            throw Oops.Oh("插件安装失败");
-
-        var pluginInfo = await _pluginManager.GetPluginInfoAsync(pluginName);
-        if (pluginInfo == null)
-            throw Oops.Oh("插件配置文件不存在或格式错误");
-
-        var exist = await _db.Queryable<DataSourceType>()
-            .Where(t => t.Code == pluginInfo.Code)
-            .FirstAsync();
-
-        if (exist != null)
+        var type = new DataSourceType
         {
-            if (exist.IsBuiltIn)
-                throw Oops.Oh("不能覆盖内置类型");
-
-            exist.Name = pluginInfo.Name;
-            exist.Description = pluginInfo.Description;
-            exist.PluginAssembly = pluginName;
-            exist.AdapterClassName = pluginInfo.AdapterClassName;
-            exist.ParamTemplateJson = pluginInfo.ParamTemplate;
-            exist.Icon = pluginInfo.Icon;
-            exist.Version = pluginInfo.Version;
-            exist.UpdateTime = DateTime.Now;
-            await _db.Updateable(exist).ExecuteCommandAsync();
-        }
-        else
-        {
-            var newType = new DataSourceType
-            {
-                Name = pluginInfo.Name,
-                Code = pluginInfo.Code,
-                Description = pluginInfo.Description,
-                PluginAssembly = pluginName,
-                AdapterClassName = pluginInfo.AdapterClassName,
-                ParamTemplateJson = pluginInfo.ParamTemplate,
-                Icon = pluginInfo.Icon,
-                Version = pluginInfo.Version,
-                IsBuiltIn = false,
-                Status = true,
-                OrderNo = 200,
-                CreateTime = DateTime.Now
-            };
-            await _db.Insertable(newType).ExecuteCommandAsync();
-        }
-
-        return "插件上传成功";
+            Code = info.Code,
+            Name = info.Name,
+            Description = info.Description,
+            Version = info.Version,
+            AdapterClassName = info.AdapterClassName,
+            AssemblyName = pluginName,
+            ParamTemplate = info.ParamTemplate,
+            Icon = info.Icon,
+            IsBuiltIn = false
+        };
+        // 覆盖或新增
+        await _db.Storageable(type).ExecuteCommandAsync();
+        return true;
     }
 
     /// <summary>
     /// 卸载插件
     /// </summary>
-    [HttpPost]
-    public async Task UnloadPlugin(BaseIdInput input)
+    public async Task<bool> UninstallPlugin([FromBody] string code)
     {
-        var type = await _db.Queryable<DataSourceType>()
-            .Where(t => t.Id == input.Id)
-            .FirstAsync();
-        if (type == null)
-            throw Oops.Oh("数据源类型不存在");
-
-        if (type.IsBuiltIn)
-            throw Oops.Oh("内置类型无法卸载");
-
-        var hasInstances = await _db.Queryable<DataSourceInstance>()
-            .Where(i => i.TypeId == input.Id)
-            .AnyAsync();
-        if (hasInstances)
-            throw Oops.Oh("该类型下存在数据源实例，无法卸载");
-
-        if (!string.IsNullOrEmpty(type.PluginAssembly))
-        {
-            _pluginManager.UnloadPlugin(type.PluginAssembly);
-
-            var pluginDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins", "datasource", type.PluginAssembly);
-            if (Directory.Exists(pluginDir))
-                Directory.Delete(pluginDir, true);
-        }
-
-        await _db.Deleteable<DataSourceType>().In(input.Id).ExecuteCommandAsync();
+        var type = await _db.Queryable<DataSourceType>().FirstAsync(x => x.Code == code);
+        if (type == null || type.IsBuiltIn) throw Oops.Oh("类型不存在或为内置类型");
+        _pluginManager.UnloadPlugin(type.AssemblyName);
+        await _db.Deleteable<DataSourceType>().Where(x => x.Code == code).ExecuteCommandAsync();
+        return true;
     }
 
     /// <summary>

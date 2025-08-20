@@ -8,20 +8,11 @@ namespace DataProcess.DataSource.Application.Service.Dto;
 public class DataSourceInstanceDto
 {
     public long Id { get; set; }
-    public string Name { get; set; }
-    public string Code { get; set; }
-    public long TypeId { get; set; }
-    public string TypeName { get; set; }
-    public string TypeCode { get; set; }
-    public string ConfigJson { get; set; }
+    public string Name { get; set; } = default!;
+    public string TypeCode { get; set; } = default!;
+    public string ConfigJson { get; set; } = default!;
+    public string? Description { get; set; }
     public long? ParentId { get; set; }
-    public string? ParentName { get; set; }
-    public bool ConnectionStatus { get; set; }
-    public DateTime? LastConnectTime { get; set; }
-    public bool Status { get; set; }
-    public string? Remark { get; set; }
-    public int OrderNo { get; set; }
-    public DateTime CreateTime { get; set; }
 }
 
 /// <summary>

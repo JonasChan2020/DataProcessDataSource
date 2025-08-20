@@ -7,19 +7,15 @@ namespace DataProcess.DataSource.Application.Service.Dto;
 /// </summary>
 public class DataSourceTypeDto
 {
-    public long Id { get; set; }
-    public string Name { get; set; }
-    public string Code { get; set; }
+    public string Code { get; set; } = default!;
+    public string Name { get; set; } = default!;
     public string? Description { get; set; }
-    public string? PluginAssembly { get; set; }
-    public string? AdapterClassName { get; set; }
-    public string? ParamTemplateJson { get; set; }
-    public bool IsBuiltIn { get; set; }
-    public int OrderNo { get; set; }
-    public bool Status { get; set; }
-    public string? Icon { get; set; }
     public string? Version { get; set; }
-    public DateTime CreateTime { get; set; }
+    public string AdapterClassName { get; set; } = default!;
+    public string AssemblyName { get; set; } = default!;
+    public string? ParamTemplate { get; set; }
+    public string? Icon { get; set; }
+    public bool IsBuiltIn { get; set; }
 }
 
 /// <summary>
