@@ -121,36 +121,6 @@
             统一DSL查询（带结构校验和插件沙箱）
             </summary>
         </member>
-        <member name="T:DataProcess.DataSource.Application.Service.DataSourceInstanceService">
-            <summary>
-            数据源实例服务
-            </summary>
-        </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Add(DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto)">
-            <summary>
-            新增数据源实例
-            </summary>
-        </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Update(DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto)">
-            <summary>
-            编辑数据源实例
-            </summary>
-        </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.Delete(System.Int64)">
-            <summary>
-            删除数据源实例
-            </summary>
-        </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.GetListAsync">
-            <summary>
-            获取所有数据源实例
-            </summary>
-        </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceInstanceService.TestConnection(System.Int64)">
-            <summary>
-            测试连接
-            </summary>
-        </member>
         <member name="T:DataProcess.DataSource.Application.Service.DataSourceMultiDbService">
             <summary>
             多数据源事务示例服务
@@ -217,17 +187,12 @@
             GET /api/datasource/types
             </summary>
         </member>
-        <member name="T:DataProcess.DataSource.Application.Service.DataSourceTypeService">
-            <summary>
-            数据源类型服务
-            </summary>
-        </member>
         <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Page(DataProcess.DataSource.Application.Service.Dto.DataSourceTypePageInput)">
             <summary>
             分页查询数据源类型
             </summary>
         </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.GetListAsync">
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.GetList">
             <summary>
             获取所有数据源类型
             </summary>
@@ -247,59 +212,14 @@
             删除数据源类型
             </summary>
         </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.GetDetail(System.Int64)">
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Detail(System.Int64)">
             <summary>
             获取数据源类型详情
             </summary>
         </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.UploadPlugin(Microsoft.AspNetCore.Http.IFormFile)">
+        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.RefreshBuiltins">
             <summary>
-            上传插件（ZIP）
-            </summary>
-        </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.UninstallPlugin(System.String)">
-            <summary>
-            卸载插件
-            </summary>
-        </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Import(Microsoft.AspNetCore.Http.IFormFile)">
-            <summary>
-            导入数据源类型
-            </summary>
-        </member>
-        <member name="M:DataProcess.DataSource.Application.Service.DataSourceTypeService.Export">
-            <summary>
-            导出数据源类型
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceDto">
-            <summary>
-            数据源实例输出
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceInput">
-            <summary>
-            数据源实例输入
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstancePageInput">
-            <summary>
-            数据源实例分页查询
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceInstanceUpdateInput">
-            <summary>
-            数据源实例更新输入
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Application.Service.Dto.TestConnectionInput">
-            <summary>
-            连接测试输入
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Application.Service.Dto.TestConnectionResult">
-            <summary>
-            连接测试结果
+            手工触发：重刷所有内置类型
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypeDto">
@@ -320,11 +240,6 @@
         <member name="T:DataProcess.DataSource.Application.Service.Dto.DataSourceTypeUpdateInput">
             <summary>
             数据源类型更新输入
-            </summary>
-        </member>
-        <member name="T:DataProcess.DataSource.Application.Service.Plugin.DataSourcePluginWatcherHostedService">
-            <summary>
-            插件目录扫描与热加载：启动扫描 + 文件变更监听（简化版）
             </summary>
         </member>
         <member name="T:DataProcess.DataSource.Application.Service.Plugin.PluginManager">

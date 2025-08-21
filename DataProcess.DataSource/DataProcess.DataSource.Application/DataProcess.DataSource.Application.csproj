@@ -42,6 +42,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="Configuration\Database.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <PackageReference Include="NJsonSchema" Version="11.4.0" />
 	  <PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.9.7.106" />
 	  <PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.9.7.106" />

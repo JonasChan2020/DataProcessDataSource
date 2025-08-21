@@ -3,6 +3,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
 		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
@@ -10,11 +11,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\DataProcess.DataSource.Web.Core\DataProcess.DataSource.Web.Core.csproj" />
+		<ProjectReference Include="..\DataProcess.DataSource.Application\DataProcess.DataSource.Application.csproj" />
 	</ItemGroup>
-	<ProjectExtensions>
-		<VisualStudio>
-			<UserProperties properties_4launchsettings_1json__JsonSchema="" />
-		</VisualStudio>
-	</ProjectExtensions>
-
 </Project>

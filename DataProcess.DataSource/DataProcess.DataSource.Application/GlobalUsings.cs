@@ -14,7 +14,6 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.CodeAnalysis;
 global using SqlSugar;
 global using DataProcess.DataSource.Core;
-global using DataProcess.DataSource.Application.Dto;
 global using DataProcess.DataSource.Application.Utils;
 global using DataProcess.DataSource.Application.Service.Plugin;
 global using DataProcess.DataSource.Application.Entity;

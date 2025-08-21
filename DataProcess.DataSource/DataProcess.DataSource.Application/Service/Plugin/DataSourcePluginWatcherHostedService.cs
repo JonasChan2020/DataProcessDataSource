@@ -5,9 +5,6 @@ using DataProcess.DataSource.Application.Entity;
 
 namespace DataProcess.DataSource.Application.Service.Plugin;
 
-/// <summary>
-/// 插件目录扫描与热加载：启动扫描 + 文件变更监听（简化版）
-/// </summary>
 public class DataSourcePluginWatcherHostedService : BackgroundService
 {
     private readonly ILogger<DataSourcePluginWatcherHostedService> _logger;

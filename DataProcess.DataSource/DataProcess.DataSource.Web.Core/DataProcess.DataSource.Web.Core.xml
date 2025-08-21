@@ -4,10 +4,5 @@
         <name>DataProcess.DataSource.Web.Core</name>
     </assembly>
     <members>
-        <member name="T:DataProcess.DataSource.Web.Core.Startup">
-            <summary>
-            启动配置，参考 Admin.NET.Web.Core/Startup.cs，注册 SqlSugar、Furion、统一异常、Swagger、日志等
-            </summary>
-        </member>
     </members>
 </doc>
